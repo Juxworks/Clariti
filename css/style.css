@@ -62,8 +62,6 @@ body {
     height: 80px;
     object-fit: contain;
     opacity: 0.9;
-    background: transparent;
-    mix-blend-mode: screen;
 }
 
 #loader-bar {
