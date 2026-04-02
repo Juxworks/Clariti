@@ -609,13 +609,13 @@ footer {
 .footer-brand-logo {
     display: block;
     width: 163px;
-    height: 40px;
+    height: 42px;
     filter: grayscale(1) invert(1) brightness(3);
     mix-blend-mode: screen;
     opacity: 0.75;
     background-image: url('../Brand_Assets/Clariti_Logo.svg');
     background-size: 180px 120px;
-    background-position: -14px -30px;
+    background-position: -14px -29px;
     background-repeat: no-repeat;
 }
 
