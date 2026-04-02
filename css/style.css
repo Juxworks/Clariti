@@ -1,0 +1,722 @@
+/* ========================================
+   CLARITI — SCROLL-DRIVEN CANVAS EXPERIENCE
+   ======================================== */
+
+/* ========== TOKENS ========== */
+:root {
+    --accent:       #a5cdd2;
+    --accent-dark:  #7ab5be;
+    --bg-light:     #fafaf8;
+    --bg-dark:      #0f0f0f;
+    --text-light:   #1a1a1a;
+    --text-dark:    #f2f2f0;
+    /* Proxima Nova: load via Adobe Fonts kit for authentic version; Montserrat is the visual stand-in */
+    --font-display: proxima-nova, 'Montserrat', sans-serif;
+    --font-body:    'Leitura Sans', 'Leitura News', Georgia, serif;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    /* Lenis handles smooth scroll, no CSS scroll-behavior */
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* ========== LOADER ========== */
+#loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-brand {
+    font-family: var(--font-display);
+    font-size: 6rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+#loader-bar {
+    width: 260px;
+    height: 1px;
+    background: rgba(165, 205, 210, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+#loader-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.15s ease;
+}
+
+#loader-percent {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.6;
+}
+
+/* ========== FIXED HEADER ========== */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1.75rem 5vw 1.75rem 8vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    mix-blend-mode: screen; /* blends entire header against canvas — black bg disappears, white stays */
+}
+
+/* Light mode: hero image is visible — disable screen blend so logo/nav show on white bg */
+.site-header.on-light {
+    mix-blend-mode: normal;
+}
+.site-header.on-light .logo {
+    filter: none;
+}
+.site-header.on-light nav a {
+    color: rgba(30, 45, 55, 0.5);
+}
+.site-header.on-light nav a:hover {
+    color: var(--accent-dark);
+}
+
+/* Logo: SVG viewBox=1440×810, logo content at x≈314-1126, y≈219-530 (812×311px)
+   Display at 32px height → scale=0.1029 → logo display=84×32, full SVG=148×84 */
+.site-header .logo {
+    width: 84px;
+    height: 32px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    filter: grayscale(1) invert(1) brightness(3);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.site-header .logo img {
+    position: absolute;
+    width: 148px;
+    height: 84px;
+    left: -32px;
+    top: -22px;
+}
+
+.site-header nav {
+    display: flex;
+    gap: 3rem;
+}
+
+.site-header nav a {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.site-header nav a:hover {
+    color: var(--accent);
+}
+
+/* Header right group: sound button + logo */
+.header-end {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.sound-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.75);
+    transition: color 0.3s ease, opacity 0.3s ease;
+    opacity: 0.75;
+    flex-shrink: 0;
+}
+
+.sound-btn:hover {
+    color: var(--accent);
+    opacity: 1;
+}
+
+/* Default: show ON icon, hide OFF icon */
+.sound-btn .icon-sound-off { display: none; }
+.sound-btn .icon-sound-on  { display: block; }
+
+/* Muted state: show OFF icon, hide ON icon */
+.sound-btn.is-muted .icon-sound-on  { display: none; }
+.sound-btn.is-muted .icon-sound-off { display: block; }
+
+/* Inherit header on-light adjustments */
+.site-header.on-light .sound-btn {
+    color: rgba(30, 45, 55, 0.5);
+}
+.site-header.on-light .sound-btn:hover {
+    color: var(--accent-dark);
+}
+
+/* ========== HERO — canvas scroll with transparent brand overlay ========== */
+.hero-standalone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+    background: transparent;   /* canvas (z-index 0) shows through */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    will-change: opacity;
+}
+
+/* Hero logo — purple sky band at top, smoke blob aligned over volcano peak */
+#hero-logo {
+    position: fixed;
+    top: -3vh;
+    left: 57%;
+    transform: translateX(-50%);
+    z-index: 1;
+    width: 50vw;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+#hero-logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 15, 15, 0.15) 0%,
+        rgba(15, 15, 15, 0.05) 45%,
+        rgba(15, 15, 15, 0.35) 100%
+    );
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+    align-items: flex-end;
+    padding: 0 5vw 3rem;
+    width: 100%;
+    will-change: opacity, transform;
+}
+
+/* Canvas — fixed fullscreen, always visible from load */
+canvas#canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+canvas#cloud-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.hero-tagline {
+    font-size: clamp(0.72rem, 1.1vw, 0.9rem);
+    color: rgba(242, 242, 240, 0.6);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+}
+
+.scroll-indicator {
+    color: rgba(242, 242, 240, 0.45);
+    font-size: 1rem;
+    animation: nudge 2.4s ease-in-out infinite;
+}
+
+@keyframes nudge {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(10px); }
+}
+
+/* ========== DARK OVERLAY ========== */
+#dark-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: var(--bg-dark);
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+/* ========== MOUNTAIN SCENE (footer background) ========== */
+#mountain-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.18;
+}
+
+#mountain-scene canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ========== SCROLL CONTAINER ========== */
+#scroll-container {
+    position: relative;
+    height: 900vh;
+    z-index: 5;
+}
+
+/* ========== SCROLL SECTIONS ========== */
+.scroll-section {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+.scroll-section.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Side zones */
+.align-left {
+    padding-left: 5vw;
+    padding-right: 55vw;
+}
+
+.align-right {
+    padding-left: 55vw;
+    padding-right: 5vw;
+}
+
+.align-left  .section-inner,
+.align-right .section-inner {
+    max-width: 40vw;
+    background: rgba(15, 15, 15, 0.82);
+    padding: 3rem 2.5rem;
+    border-radius: 3px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Center exception for Contact CTA */
+.align-center {
+    justify-content: center;
+    padding: 0 5vw;
+}
+
+.align-center .section-inner {
+    max-width: 680px;
+    text-align: center;
+    background: rgba(15, 15, 15, 0.92);
+    padding: 4rem 3.5rem;
+    border-radius: 3px;
+    border: 1px solid rgba(165, 205, 210, 0.08);
+}
+
+/* ========== SECTION TYPOGRAPHY ========== */
+.section-label {
+    display: block;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    opacity: 0.9;
+}
+
+.section-heading {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--text-dark);
+    margin-bottom: 1.75rem;
+}
+
+.section-subheading {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    opacity: 0.85;
+}
+
+.section-body {
+    font-size: 0.975rem;
+    line-height: 1.85;
+    color: rgba(242, 242, 240, 0.65);
+    margin-bottom: 1.25rem;
+    font-weight: 300;
+}
+
+/* ========== SERVICE LIST ========== */
+.service-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.service-list li {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+    font-weight: 700;
+    color: var(--text-dark);
+    padding: 1.1rem 0;
+    border-bottom: 1px solid rgba(165, 205, 210, 0.12);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.service-list li:first-child {
+    border-top: 1px solid rgba(165, 205, 210, 0.12);
+}
+
+/* ========== STATS SECTION ========== */
+.section-stats {
+    justify-content: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+    padding: 0 5vw;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.stat-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15rem;
+}
+
+.stat-number {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--text-dark);
+}
+
+.stat-suffix {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3vw, 3rem);
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: rgba(242, 242, 240, 0.4);
+    font-weight: 500;
+}
+
+/* ========== WORK LIST ========== */
+.work-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.work-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(165, 205, 210, 0.12);
+}
+
+.work-list li:first-child {
+    border-top: 1px solid rgba(165, 205, 210, 0.12);
+}
+
+.work-num {
+    font-size: 0.6rem;
+    color: var(--accent);
+    opacity: 0.65;
+    min-width: 2ch;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.work-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    font-weight: 700;
+    color: var(--text-dark);
+    flex: 1;
+    letter-spacing: -0.02em;
+}
+
+.work-cat {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(242, 242, 240, 0.38);
+    font-weight: 500;
+}
+
+/* ========== CTA BUTTON ========== */
+.cta-button {
+    display: inline-block;
+    padding: 0.9rem 2.75rem;
+    background: transparent;
+    border: 1px solid rgba(165, 205, 210, 0.5);
+    color: var(--text-dark);
+    text-decoration: none;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    margin-top: 1.5rem;
+}
+
+.cta-button:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-light);
+}
+
+/* ========== FOOTER ========== */
+footer {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    padding: 4rem 5vw;
+    text-align: center;
+    border-top: 1px solid rgba(165, 205, 210, 0.06);
+    position: relative;
+    z-index: 6;
+    overflow: hidden;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Footer logo: 50px height → scale=0.161 → logo display=131×50, full SVG=232×130 */
+.footer-brand {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-brand-logo {
+    width: 131px;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+    filter: grayscale(1) invert(1) brightness(3);
+    mix-blend-mode: screen;
+    opacity: 0.75;
+}
+
+.footer-brand-logo img {
+    position: absolute;
+    width: 232px;
+    height: 130px;
+    left: -50px;
+    top: -35px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: rgba(242, 242, 240, 0.45);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(165, 205, 210, 0.06);
+    font-size: 0.75rem;
+    color: rgba(242, 242, 240, 0.3);
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 768px) {
+    #scroll-container {
+        height: 550vh;
+    }
+
+    /* Mobile: container=550vh, formula: P×450+50 vh */
+    #about    { top: 122vh !important; }  /* 0.16×450+50 */
+    #services { top: 203vh !important; }  /* 0.34×450+50 */
+    .scroll-section:nth-child(3) { top: 275vh !important; }  /* 0.50×450+50 */
+    .scroll-section:nth-child(4) { top: 338vh !important; }  /* 0.64×450+50 */
+    #work     { top: 403vh !important; }  /* 0.785×450+50 */
+    #contact  { top: 460vh !important; }  /* 0.91×450+50 */
+
+    /* Collapse side zones */
+    .align-left,
+    .align-right {
+        padding-left: 5vw;
+        padding-right: 5vw;
+        align-items: flex-start;
+    }
+
+    .align-left  .section-inner,
+    .align-right .section-inner {
+        max-width: 100%;
+        background: rgba(15, 15, 15, 0.88);
+        padding: 2rem 1.75rem;
+        border-radius: 3px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 2rem;
+    }
+
+    .hero-heading {
+        font-size: clamp(3.5rem, 18vw, 6rem);
+    }
+
+    /* Hero logo: smaller and higher on mobile */
+    #hero-logo {
+        width: 72vw;
+        top: -1.5vh;
+        left: 55%;
+    }
+
+    /* Tagline: allow wrapping on small screens */
+    .hero-tagline {
+        font-size: clamp(0.65rem, 2.8vw, 0.85rem);
+        max-width: 55vw;
+        text-align: right;
+    }
+
+    .hero-content {
+        padding: 0 4vw 2rem;
+        gap: 1.5rem;
+    }
+
+    .site-header {
+        padding: 1.25rem 4vw 1.25rem 6vw;
+    }
+
+    .site-header nav {
+        gap: 1.5rem;
+    }
+
+    .site-header nav a {
+        font-size: 0.65rem;
+    }
+
+    footer {
+        padding: 3rem 5vw;
+    }
+}

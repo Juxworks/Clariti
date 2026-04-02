@@ -1,0 +1,12 @@
+.DS_Store
+*.DS_Store
+Thumbs.db
+node_modules/
+.env
+.claude/
+CLAUD.md
+.github/
+temporary screenshots/
+screenshot*.mjs
+serve.mjs
+verify-all.mjs

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Clariti — Professional Marketing Agency</title>
+    <link rel="icon" type="image/png" href="Brand_Assets/Clariti_FaviCon.png">
+    <link rel="apple-touch-icon" href="Brand_Assets/Clariti_FaviCon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Montserrat = geometric sans closest to Proxima Nova; swap src for Adobe Fonts kit when available -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. LOADER -->
+    <div id="loader">
+        <div class="loader-brand">C</div>
+        <div id="loader-bar"><div id="loader-bar-fill"></div></div>
+        <div id="loader-percent">0%</div>
+    </div>
+
+    <!-- 2. FIXED HEADER -->
+    <header class="site-header">
+        <nav>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#work">Work</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <div class="header-end">
+            <button id="sound-toggle" class="sound-btn" aria-label="Mute audio">
+                <!-- Sound ON icon -->
+                <svg class="icon-sound-on" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                </svg>
+                <!-- Sound OFF icon -->
+                <svg class="icon-sound-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <line x1="23" y1="9" x2="17" y2="15"/>
+                    <line x1="17" y1="9" x2="23" y2="15"/>
+                </svg>
+            </button>
+            <div class="logo"><img src="Brand_Assets/Clariti_Logo.svg" alt="Clariti"></div>
+        </div>
+    </header>
+
+    <!-- 3. HERO — canvas scroll effect -->
+    <div class="hero-standalone" id="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-tagline">Digital Craft for Ambitious Brands</p>
+            <div class="scroll-indicator">↓</div>
+        </div>
+    </div>
+
+    <!-- 4. CANVAS — fixed fullscreen, always visible -->
+    <canvas id="canvas"></canvas>
+
+    <!-- HERO LOGO — fixed sibling of canvas; multiply blend removes white bg, reveals brand color over sky -->
+    <div id="hero-logo" aria-hidden="true">
+        <img src="Brand_Assets/Clariti AI _ hero.jpg" alt="">
+    </div>
+
+    <!-- Frames loaded via JS: frames/frame_0001.webp … frame_0240.webp -->
+
+    <!-- 5. CLOUD TRAIL CANVAS -->
+    <canvas id="cloud-canvas"></canvas>
+
+    <!-- 6. DARK OVERLAY -->
+    <div id="dark-overlay"></div>
+
+
+    <!-- 8. SCROLL CONTAINER -->
+    <div id="scroll-container">
+
+        <!-- Section 1: About — top = 0.16×800+50 = 178vh -->
+        <section class="scroll-section section-content align-left"
+                 data-enter="8" data-leave="24" data-animation="slide-left"
+                 id="about" style="top: 178vh;">
+            <div class="section-inner">
+                <span class="section-label">001 / About</span>
+                <h2 class="section-heading">Rise Above</h2>
+                <p class="section-subheading">Who We Are</p>
+                <p class="section-body">As an AI-native agency, we harness cutting-edge tools and streamlined workflows to boost business performance—all within a lean operating model.</p>
+                <p class="section-body">We focus on crafting innovative brand experiences that push creative boundaries with the philosophy centred on blending strategy, design and technology to create emotionally resonant, lasting connections. At our studio, we emphasise deep brand empathy to unlock unique identities, balancing bold ideas with craft and precise execution.</p>
+            </div>
+        </section>
+
+        <!-- Section 2: Services — top = 0.34×800+50 = 322vh -->
+        <section class="scroll-section section-content align-right"
+                 data-enter="26" data-leave="42" data-animation="slide-right"
+                 id="services" style="top: 322vh;">
+            <div class="section-inner">
+                <span class="section-label">002 / Services</span>
+                <h2 class="section-heading">What We Deliver</h2>
+                <ul class="service-list">
+                    <li>Strategy &amp; Planning</li>
+                    <li>Brand Design</li>
+                    <li>Digital Experience</li>
+                    <li>Campaign Execution</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 3: Approach — top = 0.50×800+50 = 450vh ✓ -->
+        <section class="scroll-section section-content align-left"
+                 data-enter="44" data-leave="56" data-animation="scale-up"
+                 style="top: 450vh;">
+            <div class="section-inner">
+                <span class="section-label">003 / Approach</span>
+                <h2 class="section-heading">Strategy First</h2>
+                <p class="section-body">Every engagement begins with deep research — your market, your competitors, your audience's unspoken needs. We build the brief before we open a design tool.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Stats — top = 0.64×800+50 = 562vh -->
+        <section class="scroll-section section-stats"
+                 data-enter="57" data-leave="71" data-animation="stagger-up"
+                 style="top: 562vh;">
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="stat-row">
+                        <span class="stat-number" data-value="120" data-decimals="0">0</span>
+                        <span class="stat-suffix">+</span>
+                    </div>
+                    <span class="stat-label">Clients</span>
+                </div>
+                <div class="stat">
+                    <div class="stat-row">
+                        <span class="stat-number" data-value="8" data-decimals="0">0</span>
+                        <span class="stat-suffix"> yrs</span>
+                    </div>
+                    <span class="stat-label">In Business</span>
+                </div>
+                <div class="stat">
+                    <div class="stat-row">
+                        <span class="stat-number" data-value="340" data-decimals="0">0</span>
+                        <span class="stat-suffix">+</span>
+                    </div>
+                    <span class="stat-label">Campaigns</span>
+                </div>
+                <div class="stat">
+                    <div class="stat-row">
+                        <span class="stat-number" data-value="94" data-decimals="0">0</span>
+                        <span class="stat-suffix">%</span>
+                    </div>
+                    <span class="stat-label">Retention Rate</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Work — top = 0.785×800+50 = 678vh -->
+        <section class="scroll-section section-content align-right"
+                 data-enter="73" data-leave="84" data-animation="clip-reveal"
+                 id="work" style="top: 678vh;">
+            <div class="section-inner">
+                <span class="section-label">005 / Work</span>
+                <h2 class="section-heading">Selected Work</h2>
+                <ul class="work-list">
+                    <li>
+                        <span class="work-num">01</span>
+                        <span class="work-title">Brand Identity System</span>
+                        <span class="work-cat">Branding</span>
+                    </li>
+                    <li>
+                        <span class="work-num">02</span>
+                        <span class="work-title">Digital Campaign</span>
+                        <span class="work-cat">Performance</span>
+                    </li>
+                    <li>
+                        <span class="work-num">03</span>
+                        <span class="work-title">Interactive Experience</span>
+                        <span class="work-cat">Web</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 6: Contact — top = 0.91×800+50 = 778vh -->
+        <section class="scroll-section section-content align-center"
+                 data-enter="85" data-leave="97" data-animation="rotate-in"
+                 data-persist="true" id="contact" style="top: 778vh;">
+            <div class="section-inner">
+                <span class="section-label">006 / Contact</span>
+                <h2 class="section-heading">Ready to Rise?</h2>
+                <p class="section-body">Let's create something extraordinary together.</p>
+                <a href="mailto:hello@clariti.com" class="cta-button">Start a Conversation</a>
+            </div>
+        </section>
+
+    </div><!-- #scroll-container -->
+
+    <!-- FOOTER -->
+    <footer>
+        <!-- Mountain scene: minimal Three.js background for footer -->
+        <div id="mountain-scene"></div>
+        <div class="footer-content">
+            <div class="footer-brand"><span class="footer-brand-logo"><img src="Brand_Assets/Clariti_Logo.svg" alt="Clariti"></span></div>
+            <div class="footer-links">
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#work">Work</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-bottom">© 2026 Clariti. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- BACKGROUND AUDIO -->
+    <audio id="bg-audio" src="Brand_Assets/SoundScape.m4a" loop preload="auto"></audio>
+
+    <!-- CDN scripts — ORDER MATTERS -->
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
