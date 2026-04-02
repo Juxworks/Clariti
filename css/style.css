@@ -54,12 +54,16 @@ body {
 }
 
 .loader-brand {
-    font-family: var(--font-display);
-    font-size: 6rem;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: -0.04em;
     line-height: 1;
+}
+
+.loader-brand img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    opacity: 0.9;
+    background: transparent;
+    mix-blend-mode: screen;
 }
 
 #loader-bar {
@@ -363,11 +367,17 @@ canvas#cloud-canvas {
 .align-left  .section-inner,
 .align-right .section-inner {
     max-width: 40vw;
-    background: rgba(15, 15, 15, 0.82);
+    background: linear-gradient(
+        135deg,
+        rgba(15, 15, 15, 0.92) 0%,
+        rgba(20, 32, 34, 0.88) 50%,
+        rgba(15, 15, 15, 0.82) 100%
+    );
     padding: 3rem 2.5rem;
     border-radius: 3px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(165, 205, 210, 0.07);
 }
 
 /* Center exception for Contact CTA */
@@ -379,7 +389,12 @@ canvas#cloud-canvas {
 .align-center .section-inner {
     max-width: 680px;
     text-align: center;
-    background: rgba(15, 15, 15, 0.92);
+    background: linear-gradient(
+        160deg,
+        rgba(15, 15, 15, 0.97) 0%,
+        rgba(20, 35, 37, 0.93) 55%,
+        rgba(15, 15, 15, 0.92) 100%
+    );
     padding: 4rem 3.5rem;
     border-radius: 3px;
     border: 1px solid rgba(165, 205, 210, 0.08);
@@ -671,7 +686,12 @@ footer {
     .align-left  .section-inner,
     .align-right .section-inner {
         max-width: 100%;
-        background: rgba(15, 15, 15, 0.88);
+        background: linear-gradient(
+            135deg,
+            rgba(15, 15, 15, 0.95) 0%,
+            rgba(20, 32, 34, 0.90) 50%,
+            rgba(15, 15, 15, 0.88) 100%
+        );
         padding: 2rem 1.75rem;
         border-radius: 3px;
     }
@@ -685,17 +705,18 @@ footer {
         font-size: clamp(3.5rem, 18vw, 6rem);
     }
 
-    /* Hero logo: smaller and higher on mobile */
+    /* Hero logo: centered and full-width on mobile portrait */
     #hero-logo {
-        width: 72vw;
-        top: -1.5vh;
-        left: 55%;
+        width: 100vw;
+        top: 8vh;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
-    /* Tagline: allow wrapping on small screens */
+    /* Tagline: single line on mobile — no wrap */
     .hero-tagline {
-        font-size: clamp(0.65rem, 2.8vw, 0.85rem);
-        max-width: 55vw;
+        font-size: clamp(0.58rem, 2.6vw, 0.8rem);
+        white-space: nowrap;
         text-align: right;
     }
 
@@ -718,5 +739,10 @@ footer {
 
     footer {
         padding: 3rem 5vw;
+    }
+
+    /* Footer logo: drop mix-blend-mode on mobile to prevent SVG rasterisation */
+    .footer-brand-logo {
+        mix-blend-mode: normal;
     }
 }
