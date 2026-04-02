@@ -708,7 +708,7 @@ footer {
     /* Hero logo: centered and full-width on mobile portrait */
     #hero-logo {
         width: 100vw;
-        top: 8vh;
+        top: 18vh;
         left: 50%;
         transform: translateX(-50%);
     }
@@ -730,7 +730,12 @@ footer {
     }
 
     .site-header nav {
-        gap: 1.5rem;
+        gap: 1rem;
+    }
+
+    .header-end {
+        margin-left: auto;
+        padding-left: 1.25rem;
     }
 
     .site-header nav a {
