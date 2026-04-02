@@ -5,7 +5,6 @@ node_modules/
 .env
 .claude/
 CLAUD.md
-.github/
 temporary screenshots/
 screenshot*.mjs
 serve.mjs
