@@ -726,19 +726,19 @@ footer {
 
     .header-end {
         margin-left: auto;
-        padding-left: 1.25rem;
+        padding-left: 0.5rem;
     }
 
     .site-header nav a {
         font-size: 0.65rem;
     }
 
-    /* Logo: match nav text height on mobile */
+    /* Logo: compact on mobile, aligned to nav text height */
     .site-header .logo {
-        width: 58px;
-        height: 14px;
-        background-size: 63px 42px;
-        background-position: -5px -11px;
+        width: 50px;
+        height: 12px;
+        background-size: 54px 36px;
+        background-position: -4px -9px;
     }
 
     footer {
