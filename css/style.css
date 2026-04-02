@@ -121,16 +121,19 @@ body {
 /* Logo: SVG viewBox=1440×810, logo content at x≈314-1126, y≈219-530 (812×311px)
    Display at 32px height → scale=0.1029 → logo display=84×32, full SVG=148×84 */
 .site-header .logo {
-    width: 84px;
-    height: 32px;
+    height: 28px;
+    width: auto;
     flex-shrink: 0;
     filter: grayscale(1) invert(1) brightness(3);
     opacity: 0;
     transition: opacity 0.4s ease;
-    background-image: url('../Brand_Assets/Clariti_Logo.svg');
-    background-size: 148px 84px;
-    background-position: -32px -22px;
-    background-repeat: no-repeat;
+}
+
+.site-header .logo img {
+    display: block;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
 }
 
 .site-header nav {
@@ -609,16 +612,16 @@ footer {
 }
 
 .footer-brand-logo {
-    width: 131px;
-    height: 50px;
     display: block;
     filter: grayscale(1) invert(1) brightness(3);
-    mix-blend-mode: screen;
     opacity: 0.75;
-    background-image: url('../Brand_Assets/Clariti_Logo.svg');
-    background-size: 232px 130px;
-    background-position: -50px -35px;
-    background-repeat: no-repeat;
+}
+
+.footer-brand-logo img {
+    display: block;
+    height: 48px;
+    width: auto;
+    object-fit: contain;
 }
 
 .footer-links {
