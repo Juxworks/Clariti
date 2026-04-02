@@ -733,6 +733,14 @@ footer {
         font-size: 0.65rem;
     }
 
+    /* Logo: scale to 65% of desktop to fit mobile header */
+    .site-header .logo {
+        width: 88px;
+        height: 20px;
+        background-size: 98px 65px;
+        background-position: -8px -18px;
+    }
+
     footer {
         padding: 3rem 5vw;
     }
