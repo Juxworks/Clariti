@@ -733,12 +733,12 @@ footer {
         font-size: 0.65rem;
     }
 
-    /* Logo: scale to 65% of desktop to fit mobile header */
+    /* Logo: match nav text height on mobile */
     .site-header .logo {
-        width: 88px;
-        height: 20px;
-        background-size: 98px 65px;
-        background-position: -8px -18px;
+        width: 58px;
+        height: 14px;
+        background-size: 63px 42px;
+        background-position: -5px -11px;
     }
 
     footer {
