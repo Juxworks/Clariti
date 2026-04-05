@@ -9,3 +9,4 @@ temporary screenshots/
 screenshot*.mjs
 serve.mjs
 verify-all.mjs
+weights/
