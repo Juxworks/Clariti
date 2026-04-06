@@ -98,9 +98,9 @@
                 <span class="section-label">002 / Services</span>
                 <h2 class="section-heading">What We Deliver</h2>
                 <ul class="service-list">
-                    <li>Strategy &amp; Planning</li>
-                    <li>Brand Design</li>
-                    <li>Digital Experience</li>
+                    <li>Strategy &amp; Advisory</li>
+                    <li>Go to Market Design</li>
+                    <li>Brand Building</li>
                     <li>Campaign Execution</li>
                 </ul>
             </div>
@@ -117,10 +117,93 @@
             </div>
         </section>
 
-        <!-- Section 4: Stats — top = 0.64×800+50 = 562vh -->
+        <!-- Section 4: Work — top = 0.64×800+50 = 562vh -->
+        <section class="scroll-section section-work-full"
+                 data-enter="57" data-leave="71" data-animation="clip-reveal"
+                 id="work" style="top: 562vh;">
+            <div class="work-full-inner">
+                <div class="work-full-header">
+                    <span class="section-label">004 / Work</span>
+                    <h2 class="section-heading">Selected Work</h2>
+                </div>
+
+                <!-- Arrow buttons sit outside the overflow:hidden scroll area -->
+                <button class="work-arrow work-arrow--left" aria-label="Scroll left">&#8249;</button>
+                <button class="work-arrow work-arrow--right" aria-label="Scroll right">&#8250;</button>
+
+                <!-- Horizontal scroll gallery -->
+                <div class="work-scroll-area" role="region" aria-label="Selected work gallery">
+                    <div class="work-scroll-track">
+                        <figure class="work-card">
+                            <div class="work-card-img-wrap">
+                                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80"
+                                     alt="Brand Identity System placeholder" loading="lazy">
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">01</span>
+                                <span class="work-card-title">Brand Identity System</span>
+                                <span class="work-card-cat">Branding</span>
+                            </figcaption>
+                        </figure>
+                        <figure class="work-card work-card--video">
+                            <div class="work-card-img-wrap">
+                                <video autoplay muted loop playsinline
+                                       aria-label="Digital Campaign video">
+                                    <source src="Brand_Assets/SelectWorks/E_VideoAdvert.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">02</span>
+                                <span class="work-card-title">Digital Campaign</span>
+                                <span class="work-card-cat">Performance</span>
+                            </figcaption>
+                        </figure>
+                        <figure class="work-card">
+                            <div class="work-card-img-wrap">
+                                <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=600&q=80"
+                                     alt="Interactive Experience placeholder" loading="lazy">
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">03</span>
+                                <span class="work-card-title">Interactive Experience</span>
+                                <span class="work-card-cat">Web</span>
+                            </figcaption>
+                        </figure>
+                        <figure class="work-card">
+                            <div class="work-card-img-wrap">
+                                <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=600&q=80"
+                                     alt="Motion Graphics placeholder" loading="lazy">
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">04</span>
+                                <span class="work-card-title">Motion Graphics</span>
+                                <span class="work-card-cat">Content</span>
+                            </figcaption>
+                        </figure>
+                        <figure class="work-card">
+                            <div class="work-card-img-wrap">
+                                <img src="https://images.unsplash.com/photo-1559028012-481c04fa702d?auto=format&fit=crop&w=600&q=80"
+                                     alt="Go-to-Market Strategy placeholder" loading="lazy">
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">05</span>
+                                <span class="work-card-title">Go-to-Market Strategy</span>
+                                <span class="work-card-cat">Strategy</span>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <!-- Custom scrollbar track (clickable + draggable) -->
+                    <div class="work-scroll-bar-track">
+                        <div class="work-scroll-bar-thumb"></div>
+                    </div>
+                </div>
+            </div><!-- .work-full-inner -->
+        </section>
+
+        <!-- Section 5: Stats — top = 0.785×800+50 = 678vh -->
         <section class="scroll-section section-stats"
-                 data-enter="57" data-leave="71" data-animation="stagger-up"
-                 style="top: 562vh;">
+                 data-enter="73" data-leave="84" data-animation="stagger-up"
+                 style="top: 678vh;">
             <div class="stats-grid">
                 <div class="stat">
                     <div class="stat-row">
@@ -150,33 +233,6 @@
                     </div>
                     <span class="stat-label">Attention Rate</span>
                 </div>
-            </div>
-        </section>
-
-        <!-- Section 5: Work — top = 0.785×800+50 = 678vh -->
-        <section class="scroll-section section-content align-right"
-                 data-enter="73" data-leave="84" data-animation="clip-reveal"
-                 id="work" style="top: 678vh;">
-            <div class="section-inner">
-                <span class="section-label">005 / Work</span>
-                <h2 class="section-heading">Selected Work</h2>
-                <ul class="work-list">
-                    <li>
-                        <span class="work-num">01</span>
-                        <span class="work-title">Brand Identity System</span>
-                        <span class="work-cat">Branding</span>
-                    </li>
-                    <li>
-                        <span class="work-num">02</span>
-                        <span class="work-title">Digital Campaign</span>
-                        <span class="work-cat">Performance</span>
-                    </li>
-                    <li>
-                        <span class="work-num">03</span>
-                        <span class="work-title">Interactive Experience</span>
-                        <span class="work-cat">Web</span>
-                    </li>
-                </ul>
             </div>
         </section>
 
@@ -219,5 +275,172 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Work scroll gallery -->
+    <script>
+    (function () {
+        var track    = document.querySelector('.work-scroll-track');
+        var barTrack = document.querySelector('.work-scroll-bar-track');
+        var thumb    = document.querySelector('.work-scroll-bar-thumb');
+        var area     = document.querySelector('.work-scroll-area');
+        if (!track || !barTrack || !thumb) return;
+
+        var CARD_STEP   = 380;
+        var HOVER_SPEED = 4;
+        var MOUSE_SPEED = 5;
+        var DEAD_ZONE   = 0.28;
+
+        var hoverDir = 0;
+        var mouseX   = -1;
+        var inArea   = false;
+        var rafId    = null;
+
+        /* ── Custom eased scroll (avoids Lenis/scrollBy conflicts) ── */
+        var easingTarget = null;
+        var easingRaf    = null;
+
+        function easeTo(destination) {
+            destination = Math.max(0, Math.min(destination, track.scrollWidth - track.clientWidth));
+            if (easingRaf) cancelAnimationFrame(easingRaf);
+            var start     = track.scrollLeft;
+            var distance  = destination - start;
+            var duration  = 420; // ms
+            var startTime = null;
+
+            function step(now) {
+                if (!startTime) startTime = now;
+                var elapsed  = now - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                // ease-out cubic
+                var eased    = 1 - Math.pow(1 - progress, 3);
+                track.scrollLeft = start + distance * eased;
+                syncThumb();
+                syncArrows();
+                if (progress < 1) {
+                    easingRaf = requestAnimationFrame(step);
+                } else {
+                    easingRaf = null;
+                }
+            }
+            easingRaf = requestAnimationFrame(step);
+        }
+
+        /* ── Arrow clicks — delegated at document level so pointer-events never blocks them ── */
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.work-arrow');
+            if (!btn) return;
+            var dir = btn.classList.contains('work-arrow--left') ? -1 : 1;
+            easeTo(track.scrollLeft + dir * CARD_STEP);
+        });
+
+        /* ── Arrow hover: continuous scroll ── */
+        document.addEventListener('mouseenter', function (e) {
+            if (!e.target.closest) return;
+            var btn = e.target.closest('.work-arrow');
+            if (!btn) return;
+            hoverDir = btn.classList.contains('work-arrow--left') ? -1 : 1;
+            wake();
+        }, true);
+        document.addEventListener('mouseleave', function (e) {
+            if (!e.target.closest) return;
+            if (e.target.closest('.work-arrow')) hoverDir = 0;
+        }, true);
+
+        /* ── Mouse-proximity auto-scroll ── */
+        if (area) {
+            area.addEventListener('mouseenter', function () { inArea = true;  wake(); });
+            area.addEventListener('mouseleave', function () { inArea = false; });
+            area.addEventListener('mousemove',  function (e) { mouseX = e.clientX; });
+        }
+
+        function wake() {
+            if (!rafId) rafId = requestAnimationFrame(frame);
+        }
+
+        function frame() {
+            var speed = 0;
+
+            if (hoverDir !== 0) {
+                speed = hoverDir * HOVER_SPEED;
+            } else if (inArea && mouseX >= 0 && area) {
+                var rect = area.getBoundingClientRect();
+                var rel  = (mouseX - rect.left) / rect.width;
+                if (rel < DEAD_ZONE) {
+                    speed = -MOUSE_SPEED * Math.pow((DEAD_ZONE - rel) / DEAD_ZONE, 1.8);
+                } else if (rel > 1 - DEAD_ZONE) {
+                    speed =  MOUSE_SPEED * Math.pow((rel - (1 - DEAD_ZONE)) / DEAD_ZONE, 1.8);
+                }
+            }
+
+            if (speed !== 0) {
+                track.scrollLeft += speed;
+                syncThumb();
+                syncArrows();
+            }
+
+            if (hoverDir !== 0 || (inArea && speed !== 0)) {
+                rafId = requestAnimationFrame(frame);
+            } else {
+                rafId = null;
+            }
+        }
+
+        /* ── Thumb sync ── */
+        function syncThumb() {
+            var ratio  = track.clientWidth / track.scrollWidth;
+            var offset = track.scrollLeft  / track.scrollWidth;
+            thumb.style.width     = (ratio * 100) + '%';
+            thumb.style.transform = 'translateX(' + (offset / ratio * 100) + '%)';
+        }
+        track.addEventListener('scroll', function () { syncThumb(); syncArrows(); }, { passive: true });
+        window.addEventListener('resize', syncThumb);
+        syncThumb();
+
+        /* ── Arrow show/hide ── */
+        function syncArrows() {
+            var btnL = document.querySelector('.work-arrow--left');
+            var btnR = document.querySelector('.work-arrow--right');
+            if (btnL) btnL.classList.toggle('is-hidden', track.scrollLeft <= 2);
+            if (btnR) btnR.classList.toggle('is-hidden',
+                track.scrollLeft >= track.scrollWidth - track.clientWidth - 2);
+        }
+        syncArrows();
+
+        /* ── Scrollbar click-to-seek ── */
+        barTrack.addEventListener('mousedown', function (e) {
+            if (e.target === thumb) return;
+            var rect = barTrack.getBoundingClientRect();
+            var rel  = (e.clientX - rect.left) / rect.width;
+            easeTo(rel * (track.scrollWidth - track.clientWidth));
+            e.preventDefault();
+        });
+
+        /* ── Scrollbar thumb drag ── */
+        var dragging = false, dragStartX = 0, dragStartScroll = 0;
+
+        thumb.addEventListener('mousedown', function (e) {
+            dragging = true;
+            dragStartX = e.clientX;
+            dragStartScroll = track.scrollLeft;
+            if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+        document.addEventListener('mousemove', function (e) {
+            if (!dragging) return;
+            var scrollable = track.scrollWidth - track.clientWidth;
+            var ratio      = track.clientWidth / track.scrollWidth;
+            track.scrollLeft = dragStartScroll + (e.clientX - dragStartX) / (barTrack.clientWidth * ratio) * scrollable;
+        });
+        document.addEventListener('mouseup', function () {
+            if (dragging) { dragging = false; document.body.style.userSelect = ''; }
+        });
+
+        barTrack.style.cursor = 'pointer';
+        thumb.style.cursor    = 'grab';
+        thumb.addEventListener('mousedown', function () { thumb.style.cursor = 'grabbing'; });
+        document.addEventListener('mouseup', function ()  { thumb.style.cursor = 'grab'; });
+    })();
+    </script>
 </body>
 </html>
