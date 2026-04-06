@@ -26,7 +26,7 @@
         <nav>
             <a href="#about">About</a>
             <a href="#services">Services</a>
-            <a href="#work">Work</a>
+            <a href="#work">Selected Works</a>
             <a href="#contact">Contact</a>
         </nav>
         <div class="header-end">
@@ -124,7 +124,7 @@
             <div class="work-full-inner">
                 <div class="work-full-header">
                     <span class="section-label">004 / Work</span>
-                    <h2 class="section-heading">Selected Work</h2>
+                    <h2 class="section-heading">Selected Works</h2>
                 </div>
 
                 <!-- Arrow buttons sit outside the overflow:hidden scroll area -->
@@ -134,14 +134,16 @@
                 <!-- Horizontal scroll gallery -->
                 <div class="work-scroll-area" role="region" aria-label="Selected work gallery">
                     <div class="work-scroll-track">
-                        <figure class="work-card">
+                        <figure class="work-card work-card--video work-card--brand">
                             <div class="work-card-img-wrap">
-                                <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=600&q=80"
-                                     alt="Brand Identity System placeholder" loading="lazy">
+                                <video autoplay muted loop playsinline
+                                       aria-label="Brand Re-design showreel">
+                                    <source src="Brand_Assets/SelectWorks/G_ShowReel.mp4" type="video/mp4">
+                                </video>
                             </div>
                             <figcaption>
                                 <span class="work-card-num">01</span>
-                                <span class="work-card-title">Brand Identity System</span>
+                                <span class="work-card-title">Brand Re-design</span>
                                 <span class="work-card-cat">Branding</span>
                             </figcaption>
                         </figure>
@@ -259,7 +261,7 @@
             <div class="footer-links">
                 <a href="#about">About</a>
                 <a href="#services">Services</a>
-                <a href="#work">Work</a>
+                <a href="#work">Selected Works</a>
                 <a href="#contact">Contact</a>
             </div>
             <div class="footer-bottom">© 2026 Clariti. Made in SG.</div>
@@ -285,7 +287,7 @@
         var area     = document.querySelector('.work-scroll-area');
         if (!track || !barTrack || !thumb) return;
 
-        var CARD_STEP   = 380;
+        var CARD_STEP   = Math.round(window.innerWidth * 0.48);
         var HOVER_SPEED = 4;
         var MOUSE_SPEED = 5;
         var DEAD_ZONE   = 0.28;
@@ -392,7 +394,7 @@
             thumb.style.width     = (ratio * 100) + '%';
             thumb.style.transform = 'translateX(' + (offset / ratio * 100) + '%)';
         }
-        track.addEventListener('scroll', function () { syncThumb(); syncArrows(); }, { passive: true });
+        track.addEventListener('scroll', function () { syncThumb(); syncArrows(); area.classList.toggle('is-scrolled', track.scrollLeft > 10); }, { passive: true });
         window.addEventListener('resize', syncThumb);
         syncThumb();
 
@@ -440,6 +442,22 @@
         thumb.style.cursor    = 'grab';
         thumb.addEventListener('mousedown', function () { thumb.style.cursor = 'grabbing'; });
         document.addEventListener('mouseup', function ()  { thumb.style.cursor = 'grab'; });
+    })();
+    </script>
+
+    <!-- Spotlight glow on work cards -->
+    <script>
+    (function () {
+        document.addEventListener('pointermove', function (e) {
+            var cards = document.querySelectorAll('.work-card');
+            for (var i = 0; i < cards.length; i++) {
+                var rect = cards[i].getBoundingClientRect();
+                cards[i].style.setProperty('--x',  (e.clientX - rect.left).toFixed(1));
+                cards[i].style.setProperty('--y',  (e.clientY - rect.top).toFixed(1));
+                cards[i].style.setProperty('--xp', ((e.clientX - rect.left) / rect.width).toFixed(3));
+                cards[i].style.setProperty('--yp', ((e.clientY - rect.top)  / rect.height).toFixed(3));
+            }
+        });
     })();
     </script>
 </body>

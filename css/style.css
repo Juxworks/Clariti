@@ -560,11 +560,12 @@ canvas#cloud-canvas {
 
 .work-scroll-track {
     display: flex;
-    gap: 1.5vw;
+    gap: 3vw;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0 6vw 2vh;
+    padding: 3vh 6vw 3vh;
     scroll-snap-type: x proximity;
+    scroll-padding-left: 6vw;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -574,18 +575,76 @@ canvas#cloud-canvas {
     display: none;
 }
 
-/* Each card: ~28vw so ~3.5 are visible, hinting more to scroll */
+/* First card: margin pushes it away from the left clip edge */
+.work-scroll-track .work-card:first-child {
+    margin-left: 2vw;
+}
+
+/* Each card: ~48vw so ~2 are visible, hinting more to scroll */
 .work-card {
     flex: 0 0 auto;
-    width: clamp(260px, 28vw, 480px);
+    width: clamp(300px, 48vw, 780px);
     scroll-snap-align: start;
     margin: 0;
+    position: relative;
+    border-radius: 12px;
+    padding: 1rem;
+
+    /* Spotlight glow variables — updated by JS on pointermove */
+    --glow-hue:    186;
+    --glow-spread: 50;
+    --glow-size:   480;
+    --glow-border: 1px;
+    --hue: calc(var(--glow-hue) + (var(--xp, 0) * var(--glow-spread)));
+    --spot: calc(var(--glow-size) * 1px);
+
+    /* Spotlight fill — radial gradient centred on cursor, relative to this card */
+    background-image: radial-gradient(
+        var(--spot) var(--spot) at
+        calc(var(--x, -999) * 1px)
+        calc(var(--y, -999) * 1px),
+        hsl(var(--hue) 33% 73% / 0.11),
+        transparent 100%
+    );
+    transition: background-image 0.05s;
+}
+
+/* Glowing border — only the border edge lights up (mask trick) */
+.work-card::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: -1px;
+    border-radius: 13px;
+    border: var(--glow-border) solid transparent;
+    background-image: radial-gradient(
+        calc(var(--spot) * 0.6) calc(var(--spot) * 0.6) at
+        calc(var(--x, -999) * 1px)
+        calc(var(--y, -999) * 1px),
+        hsl(var(--hue) 33% 73% / 0.85),
+        transparent 100%
+    );
+    background-size: calc(100% + 2px) calc(100% + 2px);
+    background-position: 50% 50%;
+    /* clip gradient to the border strip only */
+    mask:
+        linear-gradient(transparent, transparent),
+        linear-gradient(white, white);
+    mask-clip: padding-box, border-box;
+    mask-composite: intersect;
+    -webkit-mask:
+        linear-gradient(#0000, #0000),
+        linear-gradient(#fff, #fff);
+    -webkit-mask-clip: padding-box, border-box;
+    -webkit-mask-composite: source-in;
+    filter: brightness(1.6);
+    z-index: 0;
 }
 
 .work-card-img-wrap {
     overflow: hidden;
     border-radius: 4px;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     position: relative;
 }
 
@@ -612,9 +671,24 @@ canvas#cloud-canvas {
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Video in Digital Campaign card: anchor to top so opening frame shows */
+/* Digital Campaign card — contain so full video shows without cropping */
+.work-card--video .work-card-img-wrap {
+    border: 1px solid rgba(165, 205, 210, 0.35);
+    background: #000;
+}
 .work-card--video .work-card-img-wrap video {
-    object-position: center top;
+    object-fit: contain;
+    object-position: center center;
+}
+
+/* Brand Re-design card — border + contain so full video shows */
+.work-card--brand .work-card-img-wrap {
+    border: 1px solid rgba(165, 205, 210, 0.35);
+    background: #000;
+}
+.work-card--brand .work-card-img-wrap video {
+    object-fit: contain;
+    object-position: center center;
 }
 
 .work-card:hover .work-card-img-wrap img,
@@ -718,8 +792,8 @@ canvas#cloud-canvas {
     border-color: rgba(165, 205, 210, 0.6);
 }
 
-.work-arrow--left  { left:  2vw; }
-.work-arrow--right { right: 2vw; }
+.work-arrow--left  { left:  3vw; }
+.work-arrow--right { right: 3vw; }
 
 .work-arrow.is-hidden {
     opacity: 0;
@@ -733,13 +807,18 @@ canvas#cloud-canvas {
     position: absolute;
     top: 0;
     bottom: 2rem; /* stop above the scrollbar */
-    width: 6vw;
+    width: 8vw;
     pointer-events: none;
     z-index: 2;
 }
 .work-scroll-area::before {
     left: 0;
-    background: linear-gradient(to right, rgba(10,10,10,0.6), transparent);
+    background: linear-gradient(to right, rgba(10,10,10,0.75), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.work-scroll-area.is-scrolled::before {
+    opacity: 1;
 }
 .work-scroll-area::after {
     right: 0;
