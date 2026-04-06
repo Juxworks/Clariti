@@ -849,6 +849,7 @@ footer {
     #services { top: 203vh !important; }  /* 0.34×450+50 */
     .scroll-section:nth-child(3) { top: 275vh !important; }  /* 0.50×450+50, Approach */
     #work     { top: 356vh !important; }  /* 0.68×450+50, Work — earlier + longer window */
+    .section-stats { top: 437vh !important; }  /* 0.86×450+50, Stats — visible on mobile */
     #contact  { top: 473vh !important; }  /* 0.94×450+50 */
 
     /* Collapse side zones */
