@@ -564,8 +564,6 @@ canvas#cloud-canvas {
     overflow-x: auto;
     overflow-y: hidden;
     padding: 3vh 6vw 3vh;
-    scroll-snap-type: x proximity;
-    scroll-padding-left: 6vw;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -584,7 +582,6 @@ canvas#cloud-canvas {
 .work-card {
     flex: 0 0 auto;
     width: clamp(300px, 48vw, 780px);
-    scroll-snap-align: start;
     margin: 0;
     position: relative;
     border-radius: 12px;

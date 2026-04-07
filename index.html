@@ -133,7 +133,7 @@
 
                 <!-- Horizontal scroll gallery -->
                 <div class="work-scroll-area" role="region" aria-label="Selected work gallery">
-                    <div class="work-scroll-track">
+                    <div class="work-scroll-track" data-lenis-prevent>
                         <figure class="work-card work-card--video work-card--brand">
                             <div class="work-card-img-wrap">
                                 <video autoplay muted loop playsinline
@@ -306,6 +306,7 @@
         function easeTo(destination) {
             destination = Math.max(0, Math.min(destination, track.scrollWidth - track.clientWidth));
             if (easingRaf) cancelAnimationFrame(easingRaf);
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
             var start     = track.scrollLeft;
             var distance  = destination - start;
             var duration  = 420; // ms
