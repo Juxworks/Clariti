@@ -131,11 +131,12 @@ body::after {
     color: var(--accent-dark);
 }
 
-/* Logo: favicon mark — hidden until hero scrolls away, fades in at About section */
+/* Logo: favicon mark — hidden until hero scrolls away; click = back to top */
 .site-header .logo {
     width: 28px;
     height: 28px;
     flex-shrink: 0;
+    cursor: pointer;
     filter: grayscale(1) invert(1) brightness(3);
     opacity: 0;
     transition: opacity 0.4s ease;

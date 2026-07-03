@@ -23,6 +23,8 @@ let   bgColor    = '#0f0f0f';
 let   currentFrame = 0;
 let   canvas, ctx;
 let   lenis;      // Lenis instance — shared so anchor nav can smooth-scroll
+let   navLock = false;      // true while an anchor glide is in flight — sections stay hidden
+const sectionEvals = [];    // per-section visibility evaluators, re-run after a glide lands
 
 // ── Frame path helper ──────────────────────────────────────────────────────
 function framePath(i) {
@@ -163,6 +165,26 @@ function initLenis() {
 function initAnchorNav() {
     const sc = document.getElementById('scroll-container');
 
+    // Hide everything during the glide; reveal what belongs there on arrival
+    function glideTo(dest) {
+        const span = sc.offsetHeight - window.innerHeight;
+        navLock = true;
+        const arrive = () => {
+            if (!navLock) return;
+            navLock = false;
+            const p = window.scrollY / span;
+            sectionEvals.forEach(fn => fn(p));
+        };
+
+        if (lenis) {
+            lenis.scrollTo(dest, { duration: 1.2, onComplete: arrive });
+            setTimeout(arrive, 1500); // safety net if onComplete never fires
+        } else {
+            window.scrollTo({ top: dest, behavior: 'smooth' });
+            setTimeout(arrive, 900);
+        }
+    }
+
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', (e) => {
             const target = document.querySelector(a.getAttribute('href'));
@@ -175,12 +197,15 @@ function initAnchorNav() {
             const leave = parseFloat(section.dataset.leave) / 100;
             const mid   = (enter + leave) / 2;
             const span  = sc.offsetHeight - window.innerHeight;
-            const dest  = mid * span;
-
-            if (lenis) lenis.scrollTo(dest, { duration: 1.6 });
-            else       window.scrollTo({ top: dest, behavior: 'smooth' });
+            glideTo(mid * span);
         });
     });
+
+    // Header logo → glide back to the very top (hero)
+    const headerLogo = document.querySelector('.site-header .logo');
+    if (headerLogo) {
+        headerLogo.addEventListener('click', () => glideTo(0));
+    }
 }
 
 // ── Module 4: Hero scroll effects ──────────────────────────────────────────
@@ -267,6 +292,17 @@ function initSectionAnimations() {
         // its whole enter→leave range instead of only at the range midpoint.
         const mid = (enter + leave) / 2;
 
+        // Visibility rules — skipped entirely while an anchor glide is in
+        // flight so intermediate sections don't flash/stack during transit.
+        function evaluate(p) {
+            if (navLock) { hide(); return; }
+            const inRange = p >= enter && p < leave;
+            if (inRange)                              show();
+            else if (!inRange && wasVisible && !persist) hide();
+            else if (p >= leave && persist)           show();
+        }
+        sectionEvals.push(evaluate);
+
         ScrollTrigger.create({
             trigger: sc,
             start:   'top top',
@@ -276,10 +312,7 @@ function initSectionAnimations() {
                 const span    = sc.offsetHeight - window.innerHeight;
                 const clamped = Math.min(Math.max(p, enter), leave);
                 gsap.set(section, { yPercent: -50, y: (clamped - mid) * span });
-                const inRange = p >= enter && p < leave;
-                if (inRange)                              show();
-                else if (!inRange && wasVisible && !persist) hide();
-                else if (p >= leave && persist)           show();
+                evaluate(p);
             }
         });
     });
