@@ -10,10 +10,10 @@
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const FRAME_COUNT    = 240;
-const FRAME_SPEED    = 2.0;   // animation completes at ~50% scroll
-const IMAGE_SCALE    = 0.87;  // padded-cover — fills border with sampled bg
-const DARK_ENTER     = 0.55;
-const DARK_LEAVE     = 0.72;
+const FRAME_SPEED    = 1.5;   // animation completes at ~67% scroll — smoother scrub on the short track
+const IMAGE_SCALE    = 1.0;   // full-bleed cover — artwork fills the viewport
+const DARK_ENTER     = 0.11;  // Selected Works range (10–30%)
+const DARK_LEAVE     = 0.27;
 const MARQUEE_ENTER  = 0.25;
 const MARQUEE_LEAVE  = 0.75;
 const FADE_RANGE     = 0.03;
@@ -22,6 +22,7 @@ const frames     = new Array(FRAME_COUNT);
 let   bgColor    = '#0f0f0f';
 let   currentFrame = 0;
 let   canvas, ctx;
+let   lenis;      // Lenis instance — shared so anchor nav can smooth-scroll
 
 // ── Frame path helper ──────────────────────────────────────────────────────
 function framePath(i) {
@@ -144,14 +145,42 @@ function initScrollScrub() {
 
 // ── Module 3: Lenis smooth scroll ─────────────────────────────────────────
 function initLenis() {
-    const lenis = new Lenis({
-        duration:    1.2,
-        easing:      (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
+    lenis = new Lenis({
+        duration:        1.2,
+        easing:          (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel:     true,
+        wheelMultiplier: 1.35,  // each wheel tick travels further — snappier section-to-section
     });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
+}
+
+// ── Module 3b: Anchor navigation ───────────────────────────────────────────
+// Sections are pinned overlays, so a native #jump lands at the knife-edge of
+// a section's visibility range (or outside it). Instead, scroll to the
+// midpoint of the section's enter→leave range, where it is always centred.
+function initAnchorNav() {
+    const sc = document.getElementById('scroll-container');
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (!target) return;
+            const section = target.closest('.scroll-section');
+            if (!section || !section.dataset.enter) return;
+
+            e.preventDefault();
+            const enter = parseFloat(section.dataset.enter) / 100;
+            const leave = parseFloat(section.dataset.leave) / 100;
+            const mid   = (enter + leave) / 2;
+            const span  = sc.offsetHeight - window.innerHeight;
+            const dest  = mid * span;
+
+            if (lenis) lenis.scrollTo(dest, { duration: 1.6 });
+            else       window.scrollTo({ top: dest, behavior: 'smooth' });
+        });
+    });
 }
 
 // ── Module 4: Hero scroll effects ──────────────────────────────────────────
@@ -190,7 +219,7 @@ function initSectionAnimations() {
 
         const children = section.querySelectorAll(
             '.section-label, .section-heading, .section-subheading, .section-body, ' +
-            '.cta-button, .stat, .service-list li, .work-list li'
+            '.contact-block, .stat, .service-list li, .work-list li'
         );
         if (!children.length) return;
 
@@ -234,12 +263,19 @@ function initSectionAnimations() {
             tl.reverse();
         }
 
+        // Pin: counter scroll drift so content stays viewport-centred across
+        // its whole enter→leave range instead of only at the range midpoint.
+        const mid = (enter + leave) / 2;
+
         ScrollTrigger.create({
             trigger: sc,
             start:   'top top',
             end:     'bottom bottom',
             onUpdate: (self) => {
                 const p = self.progress;
+                const span    = sc.offsetHeight - window.innerHeight;
+                const clamped = Math.min(Math.max(p, enter), leave);
+                gsap.set(section, { yPercent: -50, y: (clamped - mid) * span });
                 const inRange = p >= enter && p < leave;
                 if (inRange)                              show();
                 else if (!inRange && wasVisible && !persist) hide();
@@ -579,6 +615,7 @@ function init() {
     gsap.registerPlugin(ScrollTrigger);
 
     initLenis();          // must come first
+    initAnchorNav();
     initScrollScrub();
     initHeroScroll();
     initSectionAnimations();
@@ -591,12 +628,12 @@ function init() {
     drawFrame(0);         // paint frame 0 immediately
 
     // ── Hero entrance ──────────────────────────────────────────────────────
-    gsap.from('.hero-brand-img', {
-        opacity: 0, scale: 1.03, duration: 1.4, ease: 'power3.out', delay: 0.1
+    gsap.from('.hero-line', {
+        opacity: 0, y: 48,
+        stagger: 0.14, duration: 1.2, ease: 'power3.out', delay: 0.25
     });
-    gsap.from(['.hero-tagline', '.scroll-indicator'], {
-        opacity: 0, y: 12,
-        stagger: 0.1, duration: 0.9, ease: 'power3.out', delay: 0.6
+    gsap.from('.scroll-indicator', {
+        opacity: 0, y: 12, duration: 0.9, ease: 'power3.out', delay: 1.0
     });
 }
 

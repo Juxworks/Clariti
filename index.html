@@ -8,8 +8,8 @@
     <link rel="apple-touch-icon" href="Brand_Assets/Clariti_FaviCon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Montserrat = geometric sans closest to Proxima Nova; swap src for Adobe Fonts kit when available -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Montserrat = geometric sans closest to Proxima Nova; Alegreya Sans = humanist body in the spirit of Leitura Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -25,10 +25,9 @@
     <!-- 2. FIXED HEADER -->
     <header class="site-header">
         <nav>
-            <a href="#about">About</a>
-            <a href="#services">Services</a>
             <a href="#work">Selected Works</a>
-            <a href="#contact">Contact</a>
+            <a href="#services">Services</a>
+            <a href="#about">About &amp; Contact</a>
         </nav>
         <div class="header-end">
             <button id="sound-toggle" class="sound-btn" aria-label="Mute audio">
@@ -53,8 +52,14 @@
     <div class="hero-standalone" id="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <p class="hero-tagline">Digital Craft for Ambitious Brands</p>
-            <div class="scroll-indicator">↓</div>
+            <h1 class="hero-heading">
+                <span class="hero-line">Digital Craft</span>
+                <span class="hero-line">for Ambitious Brands</span>
+            </h1>
+            <div class="scroll-indicator" aria-hidden="true">
+                <span class="scroll-indicator-label">Scroll</span>
+                <span class="scroll-indicator-line"></span>
+            </div>
         </div>
     </div>
 
@@ -78,54 +83,20 @@
     <!-- 8. SCROLL CONTAINER -->
     <div id="scroll-container">
 
-        <!-- Section 1: About — top = 0.16×800+50 = 178vh -->
-        <section class="scroll-section section-content align-left"
-                 data-enter="8" data-leave="24" data-animation="slide-left"
-                 id="about" style="top: 178vh;">
-            <div class="section-inner">
-                <span class="section-label">001 / About</span>
-                <h2 class="section-heading">Rise Above</h2>
-                <p class="section-subheading">Who We Are</p>
-                <p class="section-body">As an AI-native agency, we harness cutting-edge tools and streamlined workflows to boost business performance—all within a lean operating model.</p>
-                <p class="section-body">We blend strategy, design, and technology to create brand experiences that push boundaries and build lasting emotional connections. By leading with deep brand empathy, we unlock unique identities—balancing bold concepts with meticulous execution.</p>
-            </div>
-        </section>
-
-        <!-- Section 2: Services — top = 0.34×800+50 = 322vh -->
-        <section class="scroll-section section-content align-right"
-                 data-enter="26" data-leave="42" data-animation="slide-right"
-                 id="services" style="top: 322vh;">
-            <div class="section-inner">
-                <span class="section-label">002 / Services</span>
-                <h2 class="section-heading">What We Deliver</h2>
-                <ul class="service-list">
-                    <li>Strategy &amp; Advisory</li>
-                    <li>Go to Market Design</li>
-                    <li>Brand Building</li>
-                    <li>Campaign Execution</li>
-                </ul>
-            </div>
-        </section>
-
-        <!-- Section 3: Approach — top = 0.50×800+50 = 450vh ✓ -->
-        <section class="scroll-section section-content align-left"
-                 data-enter="44" data-leave="56" data-animation="scale-up"
-                 style="top: 450vh;">
-            <div class="section-inner">
-                <span class="section-label">003 / Approach</span>
-                <h2 class="section-heading">Strategy First</h2>
-                <p class="section-body">Every engagement begins with deep research — your market, your competitors, your audience's unspoken needs. We build the brief before we open a design tool.</p>
-            </div>
-        </section>
-
-        <!-- Section 4: Work — top = 0.68×800+50 = 594vh -->
+        <!-- Section 1: Selected Works — top = 0.20×300+50 = 110vh -->
         <section class="scroll-section section-work-full"
-                 data-enter="56" data-leave="80" data-animation="clip-reveal"
-                 id="work" style="top: 594vh;">
+                 data-enter="10" data-leave="30" data-animation="clip-reveal"
+                 id="work" style="top: 110vh;">
             <div class="work-full-inner">
                 <div class="work-full-header">
-                    <span class="section-label">004 / Work</span>
-                    <h2 class="section-heading">Selected Works</h2>
+                    <div class="work-full-header-text">
+                        <span class="section-label">001 / Work</span>
+                        <h2 class="section-heading">Selected Works</h2>
+                    </div>
+                    <!-- Top scrub bar — mirrors the bottom one for quicker horizontal navigation -->
+                    <div class="work-scroll-bar-track work-scroll-bar-track--top">
+                        <div class="work-scroll-bar-thumb"></div>
+                    </div>
                 </div>
 
                 <!-- Arrow buttons sit outside the overflow:hidden scroll area -->
@@ -135,6 +106,19 @@
                 <!-- Horizontal scroll gallery -->
                 <div class="work-scroll-area" role="region" aria-label="Selected work gallery">
                     <div class="work-scroll-track" data-lenis-prevent>
+                        <figure class="work-card work-card--youtube" data-youtube="6lHIqUsRMFs">
+                            <div class="work-card-img-wrap">
+                                <img src="https://img.youtube.com/vi/6lHIqUsRMFs/maxresdefault.jpg"
+                                     onerror="this.onerror=null;this.src='https://img.youtube.com/vi/6lHIqUsRMFs/hqdefault.jpg';"
+                                     alt="Brand Storytelling film" loading="lazy">
+                                <span class="work-card-play" aria-hidden="true">&#9654;</span>
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">01</span>
+                                <span class="work-card-title">Brand Storytelling</span>
+                                <span class="work-card-cat">Investor Relations</span>
+                            </figcaption>
+                        </figure>
                         <figure class="work-card work-card--video work-card--brand">
                             <div class="work-card-img-wrap">
                                 <video autoplay muted loop playsinline
@@ -143,7 +127,7 @@
                                 </video>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">01</span>
+                                <span class="work-card-num">02</span>
                                 <span class="work-card-title">Go to Market Execution</span>
                                 <span class="work-card-cat">Branding</span>
                             </figcaption>
@@ -156,7 +140,7 @@
                                 </video>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">02</span>
+                                <span class="work-card-num">03</span>
                                 <span class="work-card-title">Digital Campaign</span>
                                 <span class="work-card-cat">Performance</span>
                             </figcaption>
@@ -167,7 +151,7 @@
                                      alt="Brand Re-design" loading="lazy">
                             </div>
                             <figcaption>
-                                <span class="work-card-num">03</span>
+                                <span class="work-card-num">04</span>
                                 <span class="work-card-title">Brand Re-design</span>
                                 <span class="work-card-cat">Branding</span>
                             </figcaption>
@@ -178,7 +162,7 @@
                                      alt="Website Design" loading="lazy">
                             </div>
                             <figcaption>
-                                <span class="work-card-num">04</span>
+                                <span class="work-card-num">05</span>
                                 <span class="work-card-title">Website Design</span>
                                 <span class="work-card-cat">Content</span>
                             </figcaption>
@@ -191,9 +175,23 @@
                                 </video>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">05</span>
+                                <span class="work-card-num">06</span>
                                 <span class="work-card-title">Go-to-Market Strategy</span>
                                 <span class="work-card-cat">Strategy</span>
+                            </figcaption>
+                        </figure>
+                        <figure class="work-card">
+                            <div class="work-card-img-wrap">
+                                <img src="Brand_Assets/SelectWorks/LBS_IRSeminar.jpg"
+                                     alt="LBS Singapore Investor Relations Seminar panel" loading="lazy">
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">07</span>
+                                <span class="work-card-title">Investor Relations Seminar</span>
+                                <a class="work-card-link"
+                                   href="https://lbs-comm.com/ai-digital-narratives-and-investor-trust-take-centre-stage-at-lbs-singapore-investor-relations-seminar/"
+                                   target="_blank" rel="noopener">Read&nbsp;&#8599;</a>
+                                <span class="work-card-cat">Speaking</span>
                             </figcaption>
                         </figure>
                     </div>
@@ -205,51 +203,41 @@
             </div><!-- .work-full-inner -->
         </section>
 
-        <!-- Section 5: Stats — top = 0.86×800+50 = 738vh -->
-        <section class="scroll-section section-stats"
-                 data-enter="82" data-leave="90" data-animation="stagger-up"
-                 style="top: 738vh;">
-            <div class="stats-grid">
-                <div class="stat">
-                    <div class="stat-row">
-                        <span class="stat-number" data-value="20" data-decimals="0">0</span>
-                        <span class="stat-suffix">+</span>
-                    </div>
-                    <span class="stat-label">Clients</span>
-                </div>
-                <div class="stat">
-                    <div class="stat-row">
-                        <span class="stat-number" data-value="4" data-decimals="0">0</span>
-                        <span class="stat-suffix"> yrs</span>
-                    </div>
-                    <span class="stat-label">Experience</span>
-                </div>
-                <div class="stat">
-                    <div class="stat-row">
-                        <span class="stat-number" data-value="10" data-decimals="0">0</span>
-                        <span class="stat-suffix">+</span>
-                    </div>
-                    <span class="stat-label">Campaigns</span>
-                </div>
-                <div class="stat">
-                    <div class="stat-row">
-                        <span class="stat-number" data-value="100" data-decimals="0">0</span>
-                        <span class="stat-suffix">%</span>
-                    </div>
-                    <span class="stat-label">Attention Rate</span>
-                </div>
+        <!-- Section 2: Services — top = 0.46×300+50 = 188vh -->
+        <section class="scroll-section section-content align-right"
+                 data-enter="36" data-leave="56" data-animation="slide-right"
+                 id="services" style="top: 188vh;">
+            <div class="section-inner">
+                <span class="section-label">002 / Services</span>
+                <h2 class="section-heading">What We Deliver</h2>
+                <ul class="service-list">
+                    <li>Strategy &amp; Advisory</li>
+                    <li>Go to Market Design</li>
+                    <li>Brand Building</li>
+                    <li>Campaign Execution</li>
+                </ul>
             </div>
         </section>
 
-        <!-- Section 6: Contact — top = 0.94×800+50 = 802vh -->
+        <!-- Section 3: About + Contact — top = 0.795×300+50 = 288vh -->
         <section class="scroll-section section-content align-center"
-                 data-enter="91" data-leave="97" data-animation="rotate-in"
-                 data-persist="true" id="contact" style="top: 802vh;">
+                 data-enter="62" data-leave="97" data-animation="stagger-up"
+                 data-persist="true" id="about" style="top: 288vh;">
             <div class="section-inner">
-                <span class="section-label">006 / Contact</span>
-                <h2 class="section-heading">Ready to Rise?</h2>
-                <p class="section-body">Let's craft something extraordinary together.</p>
-                <a href="mailto:justin@claritifin.com" class="cta-button">Start a Conversation</a>
+                <span class="section-label">003 / About &amp; Contact</span>
+                <h2 class="section-heading">Rise Above</h2>
+                <p class="section-subheading">Who We Are</p>
+                <p class="section-body">As an AI-native agency, we harness cutting-edge tools and streamlined workflows to boost business performance—all within a lean operating model.</p>
+                <p class="section-body">We blend strategy, design, and technology to create brand experiences that push boundaries and build lasting emotional connections. By leading with deep brand empathy, we unlock unique identities—balancing bold concepts with meticulous execution.</p>
+                <span id="contact"></span>
+                <div class="contact-block">
+                    <a href="mailto:justin@claritifin.com" class="cta-button">Start a Conversation<span class="cta-arrow">&rarr;</span></a>
+                    <div class="contact-meta">
+                        <a href="mailto:justin@claritifin.com">justin@claritifin.com</a>
+                        <span class="contact-meta-sep" aria-hidden="true"></span>
+                        <span>Singapore</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -262,10 +250,9 @@
         <div class="footer-content">
             <div class="footer-brand"><span class="footer-brand-logo" role="img" aria-label="Clariti"></span></div>
             <div class="footer-links">
-                <a href="#about">About</a>
-                <a href="#services">Services</a>
                 <a href="#work">Selected Works</a>
-                <a href="#contact">Contact</a>
+                <a href="#services">Services</a>
+                <a href="#about">About &amp; Contact</a>
             </div>
             <div class="footer-bottom">© 2026 Clariti. Made in SG.</div>
         </div>
@@ -284,13 +271,14 @@
     <!-- Work scroll gallery -->
     <script>
     (function () {
-        var track    = document.querySelector('.work-scroll-track');
-        var barTrack = document.querySelector('.work-scroll-bar-track');
-        var thumb    = document.querySelector('.work-scroll-bar-thumb');
-        var area     = document.querySelector('.work-scroll-area');
-        if (!track || !barTrack || !thumb) return;
+        var track = document.querySelector('.work-scroll-track');
+        var area  = document.querySelector('.work-scroll-area');
+        var bars  = [].slice.call(document.querySelectorAll('.work-scroll-bar-track')).map(function (bt) {
+            return { bar: bt, thumb: bt.querySelector('.work-scroll-bar-thumb') };
+        });
+        if (!track || !bars.length) return;
 
-        var CARD_STEP   = Math.round(window.innerWidth * 0.48);
+        var CARD_STEP   = Math.round(window.innerWidth * 0.32);
         var HOVER_SPEED = 4;
         var MOUSE_SPEED = 5;
         var DEAD_ZONE   = 0.28;
@@ -337,6 +325,46 @@
             if (!btn) return;
             var dir = btn.classList.contains('work-arrow--left') ? -1 : 1;
             easeTo(track.scrollLeft + dir * CARD_STEP);
+        });
+
+        /* ── Click a card: expand it into showcase size, centre it in view ── */
+        function collapseCard(card) {
+            card.classList.remove('is-expanded');
+            var iframe = card.querySelector('.work-card-iframe');
+            if (iframe) iframe.remove();
+        }
+
+        track.addEventListener('click', function (e) {
+            if (e.target.closest('a')) return; // caption links navigate, never toggle
+            var card = e.target.closest('.work-card');
+            if (!card) return;
+            var wasExpanded = card.classList.contains('is-expanded');
+            var open = track.querySelectorAll('.work-card.is-expanded');
+            for (var i = 0; i < open.length; i++) collapseCard(open[i]);
+            if (wasExpanded) return; // second click collapses
+
+            card.classList.add('is-expanded');
+
+            // YouTube showcase: swap thumbnail for an inline muted-autoplay embed
+            if (card.dataset.youtube) {
+                var wrap   = card.querySelector('.work-card-img-wrap');
+                var iframe = document.createElement('iframe');
+                iframe.className = 'work-card-iframe';
+                iframe.src = 'https://www.youtube-nocookie.com/embed/' + card.dataset.youtube +
+                             '?autoplay=1&mute=1&rel=0&modestbranding=1';
+                iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+                iframe.allowFullscreen = true;
+                iframe.title = card.querySelector('.work-card-title').textContent;
+                wrap.appendChild(iframe);
+            }
+
+            // Centre the card: once mid-transition for responsiveness, then a
+            // final correction after the width (and scrollWidth) fully settle
+            function centre() {
+                easeTo(card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2);
+            }
+            setTimeout(centre, 340);
+            setTimeout(function () { centre(); syncThumb(); syncArrows(); }, 720);
         });
 
         /* ── Arrow hover: continuous scroll ── */
@@ -391,12 +419,14 @@
             }
         }
 
-        /* ── Thumb sync ── */
+        /* ── Thumb sync (all bars) ── */
         function syncThumb() {
             var ratio  = track.clientWidth / track.scrollWidth;
             var offset = track.scrollLeft  / track.scrollWidth;
-            thumb.style.width     = (ratio * 100) + '%';
-            thumb.style.transform = 'translateX(' + (offset / ratio * 100) + '%)';
+            for (var i = 0; i < bars.length; i++) {
+                bars[i].thumb.style.width     = (ratio * 100) + '%';
+                bars[i].thumb.style.transform = 'translateX(' + (offset / ratio * 100) + '%)';
+            }
         }
         track.addEventListener('scroll', function () { syncThumb(); syncArrows(); area.classList.toggle('is-scrolled', track.scrollLeft > 10); }, { passive: true });
         window.addEventListener('resize', syncThumb);
@@ -412,40 +442,43 @@
         }
         syncArrows();
 
-        /* ── Scrollbar click-to-seek ── */
-        barTrack.addEventListener('mousedown', function (e) {
-            if (e.target === thumb) return;
-            var rect = barTrack.getBoundingClientRect();
-            var rel  = (e.clientX - rect.left) / rect.width;
-            easeTo(rel * (track.scrollWidth - track.clientWidth));
-            e.preventDefault();
+        /* ── Scrollbar click-to-seek + thumb drag (both bars) ── */
+        var dragging = false, dragStartX = 0, dragStartScroll = 0, dragBarWidth = 0;
+
+        bars.forEach(function (b) {
+            b.bar.addEventListener('mousedown', function (e) {
+                if (e.target === b.thumb) return;
+                var rect = b.bar.getBoundingClientRect();
+                var rel  = (e.clientX - rect.left) / rect.width;
+                easeTo(rel * (track.scrollWidth - track.clientWidth));
+                e.preventDefault();
+            });
+
+            b.thumb.addEventListener('mousedown', function (e) {
+                dragging = true;
+                dragStartX = e.clientX;
+                dragStartScroll = track.scrollLeft;
+                dragBarWidth = b.bar.clientWidth;
+                if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
+                document.body.style.userSelect = 'none';
+                b.thumb.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            b.bar.style.cursor   = 'pointer';
+            b.thumb.style.cursor = 'grab';
         });
 
-        /* ── Scrollbar thumb drag ── */
-        var dragging = false, dragStartX = 0, dragStartScroll = 0;
-
-        thumb.addEventListener('mousedown', function (e) {
-            dragging = true;
-            dragStartX = e.clientX;
-            dragStartScroll = track.scrollLeft;
-            if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
-            document.body.style.userSelect = 'none';
-            e.preventDefault();
-        });
         document.addEventListener('mousemove', function (e) {
             if (!dragging) return;
             var scrollable = track.scrollWidth - track.clientWidth;
             var ratio      = track.clientWidth / track.scrollWidth;
-            track.scrollLeft = dragStartScroll + (e.clientX - dragStartX) / (barTrack.clientWidth * ratio) * scrollable;
+            track.scrollLeft = dragStartScroll + (e.clientX - dragStartX) / (dragBarWidth * ratio) * scrollable;
         });
         document.addEventListener('mouseup', function () {
             if (dragging) { dragging = false; document.body.style.userSelect = ''; }
+            for (var i = 0; i < bars.length; i++) bars[i].thumb.style.cursor = 'grab';
         });
-
-        barTrack.style.cursor = 'pointer';
-        thumb.style.cursor    = 'grab';
-        thumb.addEventListener('mousedown', function () { thumb.style.cursor = 'grabbing'; });
-        document.addEventListener('mouseup', function ()  { thumb.style.cursor = 'grab'; });
     })();
     </script>
 
