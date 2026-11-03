@@ -26,6 +26,16 @@ let   lenis;      // Lenis instance — shared so anchor nav can smooth-scroll
 let   navLock = false;      // true while an anchor glide is in flight — sections stay hidden
 const sectionEvals = [];    // per-section visibility evaluators, re-run after a glide lands
 
+// Section scroll range (0–1). Phones use data-enter-mobile/data-leave-mobile
+// when present, matching the mobile `top` overrides in style.css.
+function sectionRange(section) {
+    const d = section.dataset;
+    const mobile = window.matchMedia('(max-width: 768px)').matches;
+    const enter = mobile && d.enterMobile ? d.enterMobile : d.enter;
+    const leave = mobile && d.leaveMobile ? d.leaveMobile : d.leave;
+    return { enter: parseFloat(enter) / 100, leave: parseFloat(leave) / 100 };
+}
+
 // ── Frame path helper ──────────────────────────────────────────────────────
 function framePath(i) {
     return `frames/frame_${String(i).padStart(4, '0')}.webp`;
@@ -193,8 +203,7 @@ function initAnchorNav() {
             if (!section || !section.dataset.enter) return;
 
             e.preventDefault();
-            const enter = parseFloat(section.dataset.enter) / 100;
-            const leave = parseFloat(section.dataset.leave) / 100;
+            const { enter, leave } = sectionRange(section);
             const mid   = (enter + leave) / 2;
             const span  = sc.offsetHeight - window.innerHeight;
             glideTo(mid * span);
@@ -239,12 +248,11 @@ function initSectionAnimations() {
     document.querySelectorAll('.scroll-section').forEach(section => {
         const type    = section.dataset.animation;
         const persist = section.dataset.persist === 'true';
-        const enter   = parseFloat(section.dataset.enter) / 100;
-        const leave   = parseFloat(section.dataset.leave) / 100;
+        const { enter, leave } = sectionRange(section);
 
         const children = section.querySelectorAll(
             '.section-label, .section-heading, .section-subheading, .section-body, ' +
-            '.contact-block, .stat, .service-list li, .work-list li'
+            '.contact-block, .stat, .work-list li'
         );
         if (!children.length) return;
 
