@@ -535,14 +535,30 @@ canvas#cloud-canvas {
 }
 
 /* ========== WORK — FULL-SCREEN SECTION ========== */
+/* Pinned with position:fixed — the curtain transition (app.js) scrubs a
+   clip-path on .work-full-inner instead of moving the section with scroll */
 .section-work-full {
+    position: fixed;
+    inset: 0;
+    transform: none;
+    min-height: 0;
     padding: 0;
     align-items: stretch;
+    opacity: 1;
+    visibility: hidden;
+}
+
+.section-work-full.is-visible {
+    visibility: visible;
 }
 
 .work-full-inner {
     position: relative; /* anchor for arrow buttons */
     width: 100%;
+    height: 100%;
+    overflow: hidden;
+    clip-path: inset(100% 0% 0% 0%);
+    will-change: clip-path;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -557,7 +573,6 @@ canvas#cloud-canvas {
     border-top: 1px solid rgba(165, 205, 210, 0.12);
     border-bottom: 1px solid rgba(165, 205, 210, 0.12);
     padding: 4vh 0 3vh;
-    min-height: 100vh;
 }
 
 .work-full-header {
@@ -740,18 +755,18 @@ canvas#cloud-canvas {
     object-position: center center;
 }
 
-/* Brand & Website card — two stacked images that crossfade */
+/* Brand Design & Storytelling card — stacked slides that crossfade in turn */
 .work-card--duo .work-card-img-wrap img {
     position: absolute;
     inset: 0;
+    animation: duo-fade 12s ease-in-out infinite;
 }
-.work-card--duo .work-card-img-wrap img:last-of-type {
-    animation: duo-fade 8s ease-in-out infinite;
-}
+.work-card--duo .work-card-img-wrap img:nth-of-type(2) { animation-delay: -8s; }
+.work-card--duo .work-card-img-wrap img:nth-of-type(3) { animation-delay: -4s; }
 @keyframes duo-fade {
-    0%, 40%   { opacity: 0; }
-    50%, 90%  { opacity: 1; }
-    100%      { opacity: 0; }
+    0%, 28%   { opacity: 1; }
+    36%, 92%  { opacity: 0; }
+    100%      { opacity: 1; }
 }
 
 .work-card:hover .work-card-img-wrap img,
@@ -955,6 +970,26 @@ canvas#cloud-canvas {
     background: linear-gradient(to left, rgba(10,10,10,0.6), transparent);
 }
 
+/* Touch devices: swipe settles each card in the centre */
+@media (hover: none) {
+    .work-scroll-track {
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+    }
+    .work-scroll-track.is-easing { scroll-snap-type: none; }
+    .work-card { scroll-snap-align: center; }
+}
+
+/* Short landscape viewports (phones on their side): keep the gallery in frame */
+@media (max-height: 560px) and (min-width: 769px) {
+    .work-full-inner { padding: 1.5vh 0; }
+    .work-full-header { padding-bottom: 1vh; }
+    .work-full-header .section-heading { font-size: clamp(1.4rem, 3vw, 2.2rem); }
+    .work-card { width: clamp(200px, 26vw, 340px); padding: 0.6rem; }
+    .work-card.is-expanded { width: clamp(320px, 44vw, 560px); }
+    .work-scroll-track { min-height: 0; padding-top: 1vh; padding-bottom: 1vh; }
+}
+
 /* ========== CTA BUTTON ========== */
 .cta-button {
     display: inline-block;
@@ -1126,8 +1161,7 @@ footer {
     }
 
     /* Mobile: container=300vh, formula: P×200+50 vh (P = mid of data-*-mobile range) */
-    #work     { top: 101vh !important; }  /* 0.255×200+50 */
-    #about    { top: 195vh !important; }  /* 0.725×200+50 */
+    #about   { top: 195vh !important; }  /* 0.725×200+50 */
 
     /* Collapse side zones — full-width vertical scrim instead of side gradient */
     .align-left,
@@ -1188,7 +1222,24 @@ footer {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        /* Panel is already ~90% opaque over the dark overlay; skipping the
+           blur keeps the scrubbed clip-path cheap on phone GPUs */
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        /* ...so make it near-opaque instead, or the fading hero heading
+           ghosts through the rising curtain */
+        background: linear-gradient(
+            180deg,
+            rgba(8, 10, 12, 0.97) 0%,
+            rgba(13, 22, 24, 0.96) 60%,
+            rgba(8, 10, 12, 0.97) 100%
+        );
     }
+
+    /* Smaller arrows so they don't crowd the peeking card */
+    .work-arrow { width: 34px; height: 34px; font-size: 1.35rem; }
+    .work-arrow--left  { left:  2vw; }
+    .work-arrow--right { right: 2vw; }
 
     /* Top scrub bar has no room beside the heading — bottom bar is enough */
     .work-scroll-bar-track--top { display: none; }

@@ -12,11 +12,6 @@
 const FRAME_COUNT    = 240;
 const FRAME_SPEED    = 1.5;   // animation completes at ~67% scroll — smoother scrub on the short track
 const IMAGE_SCALE    = 1.0;   // full-bleed cover — artwork fills the viewport
-const DARK_ENTER     = 0.11;  // Selected Works range (10–30%)
-const DARK_LEAVE     = 0.27;
-const MARQUEE_ENTER  = 0.25;
-const MARQUEE_LEAVE  = 0.75;
-const FADE_RANGE     = 0.03;
 
 const frames     = new Array(FRAME_COUNT);
 let   bgColor    = '#0f0f0f';
@@ -246,6 +241,7 @@ function initSectionAnimations() {
     const sc = document.getElementById('scroll-container');
 
     document.querySelectorAll('.scroll-section').forEach(section => {
+        if (section.dataset.transition === 'curtain') return; // handled by initWorkTransition
         const type    = section.dataset.animation;
         const persist = section.dataset.persist === 'true';
         const { enter, leave } = sectionRange(section);
@@ -561,24 +557,107 @@ function initAudio() {
     btn.setAttribute('aria-label', 'Mute audio');
 }
 
-// ── Module 9: Dark overlay ─────────────────────────────────────────────────
-function initDarkOverlay() {
-    const overlay = document.getElementById('dark-overlay');
-    const sc      = document.getElementById('scroll-container');
-    const de = DARK_ENTER - FADE_RANGE, df = DARK_ENTER;
-    const dl = DARK_LEAVE, do_ = DARK_LEAVE + FADE_RANGE;
+// ── Module 9: Selected Works curtain transition ───────────────────────────
+// The work panel is position:fixed (no per-scroll counter-translation, so no
+// jitter on touch devices). Scroll progress scrubs a curtain: the dark panel
+// rises over the artwork with rounded shoulders, then the heading and cards
+// rise in sequence. On exit the content drifts up and the curtain lifts away.
+// The dark overlay rides the same progress, so it is always in step with the
+// panel on every breakpoint.
+function initWorkTransition() {
+    const section = document.querySelector('.scroll-section[data-transition="curtain"]');
+    if (!section) return;
+    const sc       = document.getElementById('scroll-container');
+    const overlay  = document.getElementById('dark-overlay');
+    const inner    = section.querySelector('.work-full-inner');
+    const header   = section.querySelector('.work-full-header');
+    const area     = section.querySelector('.work-scroll-area');
+    const videos   = [...section.querySelectorAll('video[autoplay]')];
+    const reduced  = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Transition windows, in scroll-progress units around the enter/leave marks
+    const IN_BEFORE = 0.05, IN_AFTER = 0.035;
+    const OUT_BEFORE = 0.025, OUT_AFTER = 0.035;
+    const RADIUS = 36; // px — curtain shoulder radius at the start of the rise
+
+    let range = sectionRange(section);
+    window.addEventListener('resize', () => { range = sectionRange(section); });
+
+    // Content entrance, scrubbed via progress() — lags the curtain slightly
+    const tlIn = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+    const tlOut = gsap.timeline({ paused: true });
+    if (!reduced) {
+        tlIn.from(header.querySelectorAll('.section-label, .section-heading'),
+                  { y: 56, opacity: 0, stagger: 0.08, duration: 0.5 }, 0.3)
+            .from(header.querySelector('.work-scroll-bar-track--top'),
+                  { scaleX: 0, transformOrigin: 'left center', opacity: 0, duration: 0.45 }, 0.5)
+            .from(section.querySelectorAll('.work-card'),
+                  { y: 90, opacity: 0, stagger: 0.07, duration: 0.55 }, 0.38)
+            .from(area.querySelector(':scope > .work-scroll-bar-track'),
+                  { opacity: 0, duration: 0.3 }, 0.8);
+        tlOut.to([header, area], { y: -70, opacity: 0, stagger: 0.06, duration: 1, ease: 'power1.in' });
+    }
+
+    const clamp01 = (v) => Math.max(0, Math.min(1, v));
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    const easeInOut = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    let visible = false, locked = false, lastIn = -1, lastOut = -1;
+
+    function setVisible(v) {
+        if (v === visible) return;
+        visible = v;
+        section.classList.toggle('is-visible', v);
+        // Don't decode three looping videos while the panel is off-screen
+        videos.forEach(vid => { if (v) vid.play().catch(() => {}); else vid.pause(); });
+    }
+
+    function render(p) {
+        // Anchor glide in flight: hide the panel so it doesn't sweep past
+        if (navLock) {
+            if (!locked) { locked = true; gsap.to(section, { opacity: 0, duration: 0.25, overwrite: true }); }
+            overlay.style.opacity = 0;
+            return;
+        }
+        if (locked) { locked = false; gsap.to(section, { opacity: 1, duration: 0.4, overwrite: true }); }
+
+        const { enter, leave } = range;
+        const tIn  = clamp01((p - (enter - IN_BEFORE)) / (IN_BEFORE + IN_AFTER));
+        const tOut = clamp01((p - (leave - OUT_BEFORE)) / (OUT_BEFORE + OUT_AFTER));
+        const vis  = tIn * (1 - tOut);
+
+        setVisible(vis > 0);
+        overlay.style.opacity = (0.9 * vis).toFixed(3);
+        if (!visible) return;
+        if (tIn === lastIn && tOut === lastOut) return;
+        lastIn = tIn; lastOut = tOut;
+
+        if (reduced) {
+            inner.style.clipPath = 'none';
+            inner.style.opacity = vis.toFixed(3);
+            return;
+        }
+
+        // Curtain: top edge rises on enter, bottom edge lifts on exit
+        const a = easeOut(tIn), b = easeInOut(tOut);
+        const top = (1 - a) * 100, bottom = b * 100;
+        const rTop = RADIUS * (1 - a), rBot = RADIUS * b;
+        inner.style.clipPath =
+            `inset(${top.toFixed(2)}% 0% ${bottom.toFixed(2)}% 0% round ${rTop.toFixed(1)}px ${rTop.toFixed(1)}px ${rBot.toFixed(1)}px ${rBot.toFixed(1)}px)`;
+
+        tlIn.progress(tIn);
+        tlOut.progress(tOut);
+    }
+
+    // Re-run after an anchor glide lands (see initAnchorNav)
+    sectionEvals.push(render);
 
     ScrollTrigger.create({
-        trigger: sc, start: 'top top', end: 'bottom bottom', scrub: true,
-        onUpdate: (self) => {
-            const p = self.progress;
-            let o = 0;
-            if      (p >= de  && p < df)   o = (p - de) / FADE_RANGE;
-            else if (p >= df  && p <= dl)   o = 0.9;
-            else if (p > dl   && p <= do_)  o = 0.9 * (1 - (p - dl) / FADE_RANGE);
-            overlay.style.opacity = o;
-        }
+        trigger: sc, start: 'top top', end: 'bottom bottom',
+        onUpdate: (self) => render(self.progress),
+        onRefresh: (self) => render(self.progress),
     });
+    render(0);
 }
 
 // ── Module 9: Cloud mouse trail ────────────────────────────────────────────
@@ -663,7 +742,7 @@ function init() {
     initCounters();
     initMountainScene();
     initAudio();
-    initDarkOverlay();
+    initWorkTransition();
     initCloudTrail();
 
     drawFrame(0);         // paint frame 0 immediately

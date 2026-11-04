@@ -82,11 +82,12 @@
     <!-- 8. SCROLL CONTAINER -->
     <div id="scroll-container">
 
-        <!-- Section 1: Selected Works — top = 0.20×300+50 = 110vh -->
+        <!-- Section 1: Selected Works — position:fixed panel, revealed by a
+             scroll-scrubbed curtain (see initWorkTransition in app.js) -->
         <section class="scroll-section section-work-full"
                  data-enter="10" data-leave="30" data-enter-mobile="9" data-leave-mobile="42"
-                 data-animation="clip-reveal"
-                 id="work" style="top: 110vh;">
+                 data-transition="curtain"
+                 id="work">
             <div class="work-full-inner">
                 <div class="work-full-header">
                     <div class="work-full-header-text">
@@ -106,29 +107,29 @@
                 <!-- Horizontal scroll gallery -->
                 <div class="work-scroll-area" role="region" aria-label="Selected work gallery">
                     <div class="work-scroll-track" data-lenis-prevent>
-                        <figure class="work-card work-card--youtube" data-youtube="6lHIqUsRMFs">
+                        <figure class="work-card work-card--video">
                             <div class="work-card-img-wrap">
-                                <img src="https://img.youtube.com/vi/6lHIqUsRMFs/maxresdefault.jpg"
-                                     onerror="this.onerror=null;this.src='https://img.youtube.com/vi/6lHIqUsRMFs/hqdefault.jpg';"
-                                     alt="Brand Storytelling film" loading="lazy">
-                                <span class="work-card-play" aria-hidden="true">&#9654;</span>
+                                <video autoplay muted loop playsinline
+                                       aria-label="Go-to-Market Strategy showreel">
+                                    <source src="Brand_Assets/SelectWorks/E_ShowReel.mp4" type="video/mp4">
+                                </video>
                             </div>
                             <figcaption>
                                 <span class="work-card-num">01</span>
-                                <span class="work-card-title">Brand Storytelling</span>
-                                <span class="work-card-cat">Investor Relations</span>
+                                <span class="work-card-title">Go-to-Market Strategy</span>
+                                <span class="work-card-cat">Strategy</span>
                             </figcaption>
                         </figure>
                         <figure class="work-card work-card--video work-card--brand">
                             <div class="work-card-img-wrap">
                                 <video autoplay muted loop playsinline
-                                       aria-label="Go to Market Execution showreel">
+                                       aria-label="Go-to-Market Execution showreel">
                                     <source src="Brand_Assets/SelectWorks/G_ShowReel.mp4" type="video/mp4">
                                 </video>
                             </div>
                             <figcaption>
                                 <span class="work-card-num">02</span>
-                                <span class="work-card-title">Go to Market Execution</span>
+                                <span class="work-card-title">Go-to-Market Execution</span>
                                 <span class="work-card-cat">Branding</span>
                             </figcaption>
                         </figure>
@@ -145,30 +146,21 @@
                                 <span class="work-card-cat">Performance</span>
                             </figcaption>
                         </figure>
-                        <figure class="work-card work-card--duo">
+                        <figure class="work-card work-card--youtube work-card--duo" data-youtube="6lHIqUsRMFs">
                             <div class="work-card-img-wrap">
+                                <img src="https://img.youtube.com/vi/6lHIqUsRMFs/maxresdefault.jpg"
+                                     onerror="this.onerror=null;this.src='https://img.youtube.com/vi/6lHIqUsRMFs/hqdefault.jpg';"
+                                     alt="Brand Storytelling film" loading="lazy">
                                 <img src="Brand_Assets/SelectWorks/E_Branding.jpg"
                                      alt="Brand Re-design" loading="lazy">
                                 <img src="Brand_Assets/SelectWorks/E_Website.jpg"
                                      alt="Website Design" loading="lazy">
+                                <span class="work-card-play" aria-hidden="true">&#9654;</span>
                             </div>
                             <figcaption>
                                 <span class="work-card-num">04</span>
-                                <span class="work-card-title">Brand Design</span>
+                                <span class="work-card-title">Brand Design &amp; Storytelling</span>
                                 <span class="work-card-cat">Branding</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--video">
-                            <div class="work-card-img-wrap">
-                                <video autoplay muted loop playsinline
-                                       aria-label="Go-to-Market Strategy showreel">
-                                    <source src="Brand_Assets/SelectWorks/E_ShowReel.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">05</span>
-                                <span class="work-card-title">Go-to-Market Strategy</span>
-                                <span class="work-card-cat">Strategy</span>
                             </figcaption>
                         </figure>
                         <figure class="work-card">
@@ -177,8 +169,8 @@
                                      alt="LBS Singapore Investor Relations Seminar panel" loading="lazy">
                             </div>
                             <figcaption>
-                                <span class="work-card-num">06</span>
-                                <span class="work-card-title">Investor Relations Seminar</span>
+                                <span class="work-card-num">05</span>
+                                <span class="work-card-title">Investor Relations</span>
                                 <a class="work-card-link"
                                    href="https://lbs-comm.com/ai-digital-narratives-and-investor-trust-take-centre-stage-at-lbs-singapore-investor-relations-seminar/"
                                    target="_blank" rel="noopener">Read&nbsp;&#8599;</a>
@@ -251,7 +243,14 @@
         });
         if (!track || !bars.length) return;
 
-        var CARD_STEP   = Math.round(window.innerWidth * 0.32);
+        // Touch devices snap per card, so an arrow tap must move a whole card
+        // (a partial step would just snap back); desktop keeps a ~1-card glide
+        var touchSnap = window.matchMedia('(hover: none)');
+        function cardStep() {
+            var cards = track.querySelectorAll('.work-card');
+            if (touchSnap.matches && cards.length > 1) return cards[1].offsetLeft - cards[0].offsetLeft;
+            return Math.round(window.innerWidth * 0.32);
+        }
         var HOVER_SPEED = 4;
         var MOUSE_SPEED = 5;
         var DEAD_ZONE   = 0.28;
@@ -273,6 +272,8 @@
             var distance  = destination - start;
             var duration  = 420; // ms
             var startTime = null;
+            // Touch devices use scroll-snap; suspend it so each eased step isn't snapped back
+            track.classList.add('is-easing');
 
             function step(now) {
                 if (!startTime) startTime = now;
@@ -287,6 +288,7 @@
                     easingRaf = requestAnimationFrame(step);
                 } else {
                     easingRaf = null;
+                    track.classList.remove('is-easing');
                 }
             }
             easingRaf = requestAnimationFrame(step);
@@ -297,7 +299,7 @@
             var btn = e.target.closest('.work-arrow');
             if (!btn) return;
             var dir = btn.classList.contains('work-arrow--left') ? -1 : 1;
-            easeTo(track.scrollLeft + dir * CARD_STEP);
+            easeTo(track.scrollLeft + dir * cardStep());
         });
 
         /* ── Click a card: expand it into showcase size, centre it in view ── */
