@@ -106,7 +106,7 @@
 
                 <!-- Horizontal scroll gallery -->
                 <div class="work-scroll-area" role="region" aria-label="Selected engagements gallery">
-                    <div class="work-scroll-track" data-lenis-prevent>
+                    <div class="work-scroll-track">
                         <figure class="work-card work-card--client">
                             <div class="work-card-img-wrap">
                                 <img src="Brand_Assets/SelectWorks/Netbank_Cards.jpg"
@@ -164,6 +164,23 @@
                                 <span class="work-card-cat">Go-to-Market Consulting</span>
                             </figcaption>
                         </figure>
+                        <figure class="work-card work-card--client">
+                            <div class="work-card-img-wrap">
+                                <img src="Brand_Assets/SelectWorks/Oxygn.jpg"
+                                     alt="Oxygn — AI workforce for regulated fintech risk, compliance and governance" width="1600" height="900"
+                                     loading="lazy" decoding="async">
+                                <div class="work-card-info">
+                                    <p class="work-card-desc">Product discovery for Oxygn, which gives regulated fintech startups &lsquo;bank-grade&rsquo; risk, compliance and governance without requiring them to build a bank-sized team.</p>
+                                    <a class="work-card-site" href="https://oxygn.xyz/"
+                                       target="_blank" rel="noopener">oxygn.xyz&nbsp;&#8599;</a>
+                                </div>
+                            </div>
+                            <figcaption>
+                                <span class="work-card-num">04</span>
+                                <span class="work-card-title">Oxygn</span>
+                                <span class="work-card-cat">Product Discovery</span>
+                            </figcaption>
+                        </figure>
                         <figure class="work-card work-card--video">
                             <div class="work-card-img-wrap">
                                 <video autoplay muted loop playsinline
@@ -177,7 +194,7 @@
                                 </div>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">04</span>
+                                <span class="work-card-num">05</span>
                                 <span class="work-card-title">Chicago Global</span>
                                 <span class="work-card-cat">Commercialisation</span>
                             </figcaption>
@@ -199,7 +216,7 @@
                                 <span class="work-card-play" aria-hidden="true">&#9654;</span>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">05</span>
+                                <span class="work-card-num">06</span>
                                 <span class="work-card-title">Enigmatig</span>
                                 <span class="work-card-cat">Rebrand &amp; Product</span>
                             </figcaption>
@@ -214,7 +231,7 @@
                                 </div>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">06</span>
+                                <span class="work-card-num">07</span>
                                 <span class="work-card-title">LBS Communications</span>
                                 <a class="work-card-link"
                                    href="https://lbs-comm.com/ai-digital-narratives-and-investor-trust-take-centre-stage-at-lbs-singapore-investor-relations-seminar/"
@@ -234,7 +251,7 @@
                                 </div>
                             </div>
                             <figcaption>
-                                <span class="work-card-num">07</span>
+                                <span class="work-card-num">08</span>
                                 <span class="work-card-title">Gurung</span>
                                 <span class="work-card-cat">Branding</span>
                             </figcaption>
@@ -315,7 +332,7 @@
         }
         var HOVER_SPEED = 4;
         var MOUSE_SPEED = 5;
-        var DEAD_ZONE   = 0.28;
+        var DEAD_ZONE   = 0.14;
 
         var hoverDir = 0;
         var mouseX   = -1;
@@ -330,6 +347,7 @@
             destination = Math.max(0, Math.min(destination, track.scrollWidth - track.clientWidth));
             if (easingRaf) cancelAnimationFrame(easingRaf);
             if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            stopWheelGlide();
             var start     = track.scrollLeft;
             var distance  = destination - start;
             var duration  = 420; // ms
@@ -355,6 +373,76 @@
             }
             easingRaf = requestAnimationFrame(step);
         }
+
+        /* ── Wheel / trackpad: vertical scrolling over the gallery moves it
+              sideways; at either end the gesture passes through to the page ── */
+        var wheelTarget = null;
+        var wheelRaf    = null;
+
+        function stopWheelGlide() {
+            if (wheelRaf) cancelAnimationFrame(wheelRaf);
+            wheelRaf = null;
+            wheelTarget = null;
+        }
+
+        function wheelGlide() {
+            var diff = wheelTarget - track.scrollLeft;
+            if (Math.abs(diff) < 0.5) {
+                track.scrollLeft = wheelTarget;
+                stopWheelGlide();
+                track.classList.remove('is-easing');
+            } else {
+                var before = track.scrollLeft;
+                var step   = diff * 0.2;
+                // at least 1px per frame, so integer-pixel scrolling can't stall short of the target
+                if (Math.abs(step) < 1) step = Math.abs(diff) < 1 ? diff : (diff > 0 ? 1 : -1);
+                track.scrollLeft += step;
+                if (Math.abs(track.scrollLeft - before) < 0.1) { // clamped at an edge
+                    stopWheelGlide();
+                    track.classList.remove('is-easing');
+                } else {
+                    wheelRaf = requestAnimationFrame(wheelGlide);
+                }
+            }
+            syncThumb();
+            syncArrows();
+        }
+
+        area.addEventListener('wheel', function (e) {
+            if (e.ctrlKey) return; // pinch-zoom
+            // Sideways trackpad swipes scroll the track natively; just keep
+            // the page's smooth-scroller from swallowing them
+            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.stopPropagation(); return; }
+
+            var unit = e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? track.clientWidth : 1);
+            var dy   = e.deltaY * unit;
+            var max  = track.scrollWidth - track.clientWidth;
+            var from = wheelTarget === null ? track.scrollLeft : wheelTarget;
+            // Already at the end being scrolled towards (a few px of slack for
+            // layout rounding): let the page scroll on
+            if ((dy > 0 && from >= max - 4) || (dy < 0 && from <= 1)) return;
+            var to = Math.max(0, Math.min(max, from + dy));
+
+            e.preventDefault();
+            e.stopPropagation();
+            if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            track.classList.add('is-easing');
+            wheelTarget = to;
+            if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelGlide);
+        }, { passive: false });
+
+        /* ── Keyboard: left / right arrows step through the cards ── */
+        var workSection = document.getElementById('work');
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            if (!workSection.classList.contains('is-visible')) return;
+            var t = e.target;
+            if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+            e.preventDefault();
+            easeTo(track.scrollLeft + (e.key === 'ArrowRight' ? 1 : -1) * cardStep());
+        });
 
         /* ── Arrow clicks — delegated at document level so pointer-events never blocks them ── */
         document.addEventListener('click', function (e) {
@@ -430,6 +518,7 @@
 
         function frame() {
             var speed = 0;
+            if (wheelRaf) { rafId = null; return; }
 
             if (hoverDir !== 0) {
                 speed = hoverDir * HOVER_SPEED;
@@ -497,6 +586,7 @@
                 dragStartScroll = track.scrollLeft;
                 dragBarWidth = b.bar.clientWidth;
                 if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
+                stopWheelGlide();
                 document.body.style.userSelect = 'none';
                 b.thumb.style.cursor = 'grabbing';
                 e.preventDefault();
