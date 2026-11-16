@@ -557,7 +557,7 @@ function initAudio() {
     btn.setAttribute('aria-label', 'Mute audio');
 }
 
-// ── Module 9: Selected Works curtain transition ───────────────────────────
+// ── Module 9: Selected Engagements curtain transition ───────────────────────────
 // The work panel is position:fixed (no per-scroll counter-translation, so no
 // jitter on touch devices). Scroll progress scrubs a curtain: the dark panel
 // rises over the artwork with rounded shoulders, then the heading and cards
@@ -583,18 +583,40 @@ function initWorkTransition() {
     let range = sectionRange(section);
     window.addEventListener('resize', () => { range = sectionRange(section); });
 
-    // Content entrance, scrubbed via progress() — lags the curtain slightly
-    const tlIn = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
-    const tlOut = gsap.timeline({ paused: true });
-    if (!reduced) {
+    // Content entrance, scrubbed via progress() — lags the curtain slightly.
+    // Rebuilt each time the panel comes on screen so only the cards actually
+    // in view are animated: the gallery can grow without adding per-frame
+    // work (or extra compositor layers) to the scroll-scrubbed transition.
+    const cards = [...section.querySelectorAll('.work-card')];
+    const TL_IN_LENGTH = 1.21; // fixed, so the scrub pacing never depends on card count
+    let tlIn = gsap.timeline({ paused: true });
+    let lastIn = -1, lastOut = -1;
+
+    function buildIn() {
+        tlIn.revert();
+        tlIn = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+        lastIn = lastOut = -1;
+        if (reduced) return;
+        const vw = window.innerWidth;
+        const inView = cards.filter((c) => {
+            const r = c.getBoundingClientRect();
+            return r.right > 0 && r.left < vw;
+        });
         tlIn.from(header.querySelectorAll('.section-label, .section-heading'),
                   { y: 56, opacity: 0, stagger: 0.08, duration: 0.5 }, 0.3)
             .from(header.querySelector('.work-scroll-bar-track--top'),
-                  { scaleX: 0, transformOrigin: 'left center', opacity: 0, duration: 0.45 }, 0.5)
-            .from(section.querySelectorAll('.work-card'),
-                  { y: 90, opacity: 0, stagger: 0.07, duration: 0.55 }, 0.38)
-            .from(area.querySelector(':scope > .work-scroll-bar-track'),
-                  { opacity: 0, duration: 0.3 }, 0.8);
+                  { scaleX: 0, transformOrigin: 'left center', opacity: 0, duration: 0.45 }, 0.5);
+        if (inView.length) {
+            tlIn.from(inView,
+                  { y: 90, opacity: 0, stagger: (i) => Math.min(i, 4) * 0.07, duration: 0.55 }, 0.38);
+        }
+        tlIn.from(area.querySelector(':scope > .work-scroll-bar-track'),
+                  { opacity: 0, duration: 0.3 }, 0.8)
+            .set({}, {}, TL_IN_LENGTH);
+    }
+
+    const tlOut = gsap.timeline({ paused: true });
+    if (!reduced) {
         tlOut.to([header, area], { y: -70, opacity: 0, stagger: 0.06, duration: 1, ease: 'power1.in' });
     }
 
@@ -602,11 +624,12 @@ function initWorkTransition() {
     const easeOut = (t) => 1 - Math.pow(1 - t, 3);
     const easeInOut = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-    let visible = false, locked = false, lastIn = -1, lastOut = -1;
+    let visible = false, locked = false;
 
     function setVisible(v) {
         if (v === visible) return;
         visible = v;
+        if (v) buildIn();
         section.classList.toggle('is-visible', v);
         // Don't decode three looping videos while the panel is off-screen
         videos.forEach(vid => { if (v) vid.play().catch(() => {}); else vid.pause(); });
