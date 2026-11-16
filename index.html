@@ -1,643 +1,825 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Rise Above, Build with Clariti</title>
-    <link rel="icon" type="image/svg+xml" href="Brand_Assets/Clariti_FaviCon.svg">
-    <link rel="apple-touch-icon" href="Brand_Assets/Clariti_FaviCon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Montserrat = geometric sans closest to Proxima Nova; Alegreya Sans = humanist body in the spirit of Leitura Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Alegreya+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <script defer src="/_vercel/insights/script.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rise Above, Build with Clariti</title>
+<link rel="icon" type="image/svg+xml" href="Brand_Assets/Clariti_FaviCon.svg">
+<link rel="apple-touch-icon" href="Brand_Assets/Clariti_FaviCon.svg">
+<meta name="description" content="Clariti works hands-on with founders and their teams on product development, go to market and operating model design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --ink:        #2b6170;   /* deep Clariti teal — text on mist */
+    --ink-soft:   #7fa5ae;
+    --ink-faint:  #a9c4ca;
+    --mist:       #e8eef0;
+    --deep:       #0d252d;
+    --white:      #ffffff;
+    --gutter:     clamp(24px, 13.6vw, 196px);
+    --indent:     clamp(0px, 4.8vw, 69px);
+    --font:       'Jost', 'Century Gothic', 'Futura', sans-serif;
+    --ease:       cubic-bezier(.22, .7, .2, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+    font-family: var(--font);
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--mist);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+img, video { display: block; max-width: 100%; }
+
+/* ── Atmosphere: fixed sky, peak and drifting fog ───────────── */
+.sky, .peak, .fog, .veil { position: fixed; inset: 0; pointer-events: none; }
+.sky  { z-index: 0; background: var(--mist); }
+.sky::after {            /* soft overcast shading at the top of the frame */
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(40, 62, 74, .26) 0%, rgba(40, 62, 74, 0) 46%, rgba(255, 255, 255, .22) 100%);
+}
+.peak { z-index: 1; will-change: transform, opacity; }
+.peak-img {
+    position: absolute; inset: -4vh 0 0;
+    background: url('img/peak.jpg') 72% 40% / cover no-repeat;   /* generated with GoodTake */
+}
+.peak-tint {             /* fades the photo into the mist below it */
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(232, 238, 240, 0) 55%, rgba(232, 238, 240, .9) 100%);
+}
+.fog { z-index: 2; overflow: hidden; }
+.fog-layer {
+    position: absolute; top: -10%; left: 0; height: 120%;
+    background-repeat: repeat; will-change: transform;
+}
+.fog-layer > i {
+    position: absolute; inset: 0; background: inherit; background-repeat: repeat;
+    animation: drift linear infinite;
+}
+@keyframes drift { to { transform: translate3d(calc(var(--tile) * -1), 0, 0); } }
+.veil {                   /* keeps copy legible where fog sits behind it */
+    z-index: 3;
+    background: radial-gradient(ellipse 60% 50% at 28% 52%, rgba(232, 238, 240, .55), rgba(232, 238, 240, 0) 70%);
+    transition: opacity .6s;
+}
+body.is-dark .veil { opacity: 0; }
+
+/* ── Chrome ─────────────────────────────────────────────────── */
+.nav {
+    position: fixed; z-index: 20; top: 0; left: 0; right: 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: clamp(28px, 12.4vh, 112px) var(--gutter) 0;
+    font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ink); transition: color .6s, padding .6s var(--ease);
+}
+body.is-scrolled .nav { padding-top: clamp(22px, 5vh, 44px); }
+.nav { transition: color .6s, padding .6s var(--ease), opacity .5s, transform .6s var(--ease); }
+body.nav-away .nav { opacity: 0; transform: translateY(-24px); pointer-events: none; }
+body.is-dark .nav, body.is-dark .rail { color: var(--white); }
+.nav-tabs { display: flex; gap: 24px; }
+.nav-tabs a { position: relative; padding-bottom: 26px; opacity: .5; transition: opacity .3s; }
+.nav-tabs a:hover, .nav-tabs a.is-active { opacity: 1; }
+.nav-tabs a::after {
+    content: ''; position: absolute; left: 0; right: 4px; bottom: 0; height: 2px;
+    background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease);
+}
+.nav-tabs a.is-active::after { transform: scaleX(1); }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-right a { display: inline-flex; align-items: center; gap: 12px; }
+.nav-badge {
+    display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+    border-radius: 6px; background: currentColor; font-size: 9px; font-weight: 600; letter-spacing: 0;
+}
+.nav-badge b { color: var(--mist); font-weight: 600; }
+body.is-dark .nav-badge b { color: var(--deep); }
+.nav-dots { display: inline-flex; gap: 8px; margin-left: 12px; }
+.nav-dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+.rail {
+    position: fixed; z-index: 20; right: var(--gutter); bottom: clamp(24px, 7vh, 64px);
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    color: var(--ink); transition: color .6s;
+}
+.rail button {
+    width: 52px; height: 52px; border-radius: 50%; border: 1px solid transparent;
+    background: none; color: inherit; cursor: pointer; font: inherit; font-size: 15px;
+    opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s var(--ease), border-color .3s;
+}
+body.is-scrolled .rail button { opacity: 1; transform: none; border-color: color-mix(in srgb, currentColor 28%, transparent); }
+.rail button:hover { border-color: currentColor; }
+.rail-progress { width: 24px; height: 2px; background: color-mix(in srgb, currentColor 25%, transparent); position: relative; }
+.rail-progress i { position: absolute; inset: 0; background: currentColor; transform: scaleX(var(--p, 0)); transform-origin: left; }
+
+/* ── Layout ─────────────────────────────────────────────────── */
+main { position: relative; z-index: 10; }
+section { position: relative; padding: 0 var(--gutter); }
+.light { color: var(--ink); }
+.dark  { color: var(--white); }
+
+.eyebrow { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.display {
+    font-size: clamp(26px, 3.5vw, 50px); font-weight: 400; line-height: 1.16;
+    letter-spacing: .045em; text-transform: uppercase;
+}
+.lede { font-size: clamp(18px, 1.7vw, 24px); line-height: 1.6; letter-spacing: .02em; max-width: 19em; }
+.body { font-size: 16px; line-height: 1.7; letter-spacing: .02em; max-width: 34em; }
+
+.go {
+    display: inline-flex; align-items: center; gap: 18px; position: relative; padding-bottom: 26px;
+    font-size: 13px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase;
+}
+.go-dot {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--white); color: var(--ink);
+    display: grid; place-items: center; font-size: 14px; font-weight: 400; letter-spacing: 0;
+    transition: transform .5s var(--ease);
+}
+.go::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: currentColor;
+    opacity: .7; transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease);
+}
+.go:hover::after, .go.is-lined::after { transform: scaleX(1); }
+.go:hover .go-dot { transform: translateX(6px); }
+
+.diamond {
+    width: 56px; height: 56px; display: grid; place-items: center; transform: rotate(45deg);
+    border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+    font-size: 12px; font-weight: 600; flex: none;
+}
+.diamond span { transform: rotate(-45deg); }
+
+/* reveal */
+.rv { opacity: 0; transform: translateY(34px); transition: opacity 1.2s var(--ease), transform 1.2s var(--ease); transition-delay: calc(var(--d, 0) * 120ms); }
+.rv.in { opacity: 1; transform: none; }
+
+.diamond.rv { transform: translateY(34px) rotate(45deg); }
+.diamond.rv.in { transform: rotate(45deg); }
+
+/* ── Hero ───────────────────────────────────────────────────── */
+.hero { height: 100vh; min-height: 560px; display: flex; align-items: center; }
+.brand { display: flex; align-items: center; gap: clamp(16px, 2.2vw, 32px); }
+.brand-mark { width: clamp(52px, 5.2vw, 74px); aspect-ratio: 1; background: var(--ink); flex: none;
+    -webkit-mask: url('Brand_Assets/Clariti_FaviCon.svg') center / contain no-repeat; mask: url('Brand_Assets/Clariti_FaviCon.svg') center / contain no-repeat; }
+.brand-rule { width: 1px; height: clamp(34px, 3.4vw, 48px); background: var(--ink); opacity: .45; }
+.brand-word {
+    font-size: clamp(30px, 4.3vw, 62px); font-weight: 300; letter-spacing: .32em; text-transform: uppercase;
+    margin-right: -.32em; line-height: 1;
+}
+.hero-foot {
+    position: absolute; left: var(--gutter); bottom: clamp(28px, 7.4vh, 68px);
+    font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* ── Statement ──────────────────────────────────────────────── */
+.statement { min-height: 100vh; display: flex; align-items: center; padding-left: calc(var(--gutter) + var(--indent)); }
+.intro { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; gap: 64px; padding-left: calc(var(--gutter) + var(--indent)); align-items: flex-start; }
+
+/* ── Practice ───────────────────────────────────────────────── */
+.practice-head { padding-top: 22vh; padding-bottom: 12vh; padding-left: calc(var(--gutter) + var(--indent)); }
+.practice-head .display { color: var(--ink-soft); max-width: 16em; }
+.practice-head .display em { font-style: normal; color: var(--ink); }
+.practice-head .body { margin-top: 48px; }
+.pillar { padding-top: 16vh; padding-bottom: 16vh; }
+#product { padding-top: 34vh; }
+.pillar-inner { position: relative; max-width: 660px; padding-left: var(--indent); }
+.pillar:nth-of-type(even) .pillar-inner { margin-left: auto; }
+.pillar .diamond { position: absolute; left: calc(var(--indent) - 97px); top: -8px; }
+.pillar-name { font-size: 20px; letter-spacing: .04em; margin-bottom: 44px; padding-top: 86px; }
+.pillar .display { font-size: clamp(24px, 2.9vw, 42px); margin-bottom: 56px; }
+.pillar-refs { margin-top: 22px; font-size: 12px; letter-spacing: .08em; opacity: .72; }
+
+/* ── Engagements ────────────────────────────────────────────── */
+.work { padding-top: 16vh; padding-bottom: 16vh; }
+.work-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-bottom: 9vh; padding-left: var(--indent); }
+.work-head .display { color: rgba(255, 255, 255, .34); }
+.work-head .display em { font-style: normal; color: var(--white); }
+.work-count { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; white-space: nowrap; padding-bottom: 10px; }
+.rows { border-top: 1px solid rgba(255, 255, 255, .18); }
+.row {
+    position: relative; display: grid; grid-template-columns: 69px minmax(0, 1fr) minmax(0, 1.45fr) minmax(0, 300px);
+    column-gap: clamp(16px, 2.4vw, 40px); align-items: center;
+    padding: 34px 0; border-bottom: 1px solid rgba(255, 255, 255, .18);
+    transition: padding .6s var(--ease), background-color .6s;
+}
+.row::before {
+    content: ''; position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--white);
+    transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease);
+}
+.row .diamond { width: 38px; height: 38px; font-size: 10px; margin-left: 9px; transition: background-color .4s, color .4s; }
+.row-name { font-weight: 400; font-size: clamp(20px, 2.1vw, 30px); letter-spacing: .06em; text-transform: uppercase; line-height: 1.2; }
+.row-tag { display: block; margin-top: 8px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #a5cdd2; }
+.row-desc { font-size: 14px; line-height: 1.65; letter-spacing: .02em; opacity: .78; max-width: 38em; }
+.row-links { display: flex; align-items: center; justify-content: flex-end; gap: 18px; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+.row-links a { display: inline-flex; align-items: center; gap: 12px; }
+.row-links .read { opacity: .7; border-bottom: 1px solid rgba(255, 255, 255, .5); padding-bottom: 3px; }
+.row-links .read:hover { opacity: 1; }
+.row-links .go-dot { width: 36px; height: 36px; }
+.row-links a:hover .go-dot { transform: translateX(5px); }
+.row-thumb { display: none; }
+@media (hover: hover) {
+    .row:hover { padding-left: 14px; }
+    .row:hover::before { transform: scaleX(1); }
+    .row:hover .diamond { background: var(--white); color: var(--deep); }
+}
+.peek {
+    position: fixed; z-index: 30; left: 0; top: 0; width: 340px; aspect-ratio: 16 / 9; overflow: hidden;
+    pointer-events: none; opacity: 0; transform: translate3d(-999px, -999px, 0);
+    transition: opacity .35s; box-shadow: 0 30px 80px rgba(3, 14, 18, .55); background: #0a1a20;
+}
+.peek.on { opacity: 1; }
+.peek img, .peek video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ── Connect / footer ───────────────────────────────────────── */
+.connect { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 52px; padding-top: 14vh; padding-bottom: 14vh; padding-left: calc(var(--gutter) + var(--indent)); }
+.connect { overflow: hidden; }
+.connect > * { position: relative; z-index: 1; }
+.connect::before {       /* wave breaking on the mountain — generated with GoodTake */
+    content: ''; position: absolute; z-index: 0; inset: 0;
+    background: url('img/wave.jpg') 60% 50% / cover no-repeat;
+    transform-origin: 70% 60%; animation: swell 26s ease-in-out infinite alternate;
+}
+.connect::after {
+    content: ''; position: absolute; z-index: 0; inset: 0;
+    background:
+        linear-gradient(180deg, #0d242c 0%, rgba(13, 36, 44, .55) 16%, rgba(13, 36, 44, 0) 38%, rgba(10, 29, 36, 0) 78%, rgba(10, 29, 36, .9) 100%),
+        linear-gradient(90deg, rgba(9, 30, 38, .86) 0%, rgba(9, 30, 38, .62) 38%, rgba(9, 30, 38, .12) 72%, rgba(9, 30, 38, 0) 100%),
+        rgba(20, 70, 84, .22);
+}
+@keyframes swell { from { transform: scale(1.02); } to { transform: scale(1.12) translate3d(-1.2%, -1%, 0); } }
+.connect .display { font-size: clamp(40px, 7vw, 104px); font-weight: 300; letter-spacing: .2em; line-height: 1.05; }
+.connect-meta { display: flex; flex-wrap: wrap; gap: 14px 56px; font-size: 12px; letter-spacing: .08em; opacity: .8; }
+.connect-meta a { border-bottom: 1px solid rgba(255, 255, 255, .4); padding-bottom: 3px; }
+footer {
+    position: relative; z-index: 10; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px;
+    padding: 40px var(--gutter) 48px; color: rgba(255, 255, 255, .62);
+    background: #0a1d24;
+    font-size: 12px; letter-spacing: .08em; border-top: 1px solid rgba(255, 255, 255, .14);
+}
+footer nav { display: flex; gap: 28px; text-transform: uppercase; }
+footer a:hover { color: var(--white); }
+
+/* ── Globe ──────────────────────────────────────────────────── */
+.globe { height: 280vh; padding: 0; }
+.globe-stick { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.globe-stick::before {   /* space backdrop generated with GoodTake */
+    content: ''; position: absolute; inset: 0; background: url('img/space.jpg') center / cover no-repeat; opacity: .9;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 100%); mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 100%);
+}
+.globe canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.globe-copy {
+    position: absolute; left: calc(var(--gutter) + var(--indent)); top: clamp(88px, 15vh, 150px);
+    max-width: min(34em, 46vw); display: flex; flex-direction: column; gap: 36px; align-items: flex-start;
+}
+.globe-copy .display { font-size: clamp(22px, 2.5vw, 36px); }
+.globe-copy .display em { font-style: normal; color: rgba(255, 255, 255, .45); }
+.globe-places { display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.globe-places span { display: inline-flex; align-items: center; gap: 10px; }
+.globe-places span::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+
+/* ── Small screens ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .nav-tabs a:not(.is-active) { display: none; }
+    .nav-dots { display: none; }
+    .rail { right: 16px; bottom: 20px; }
+    .rail button { width: 44px; height: 44px; }
+    .peak-img { background-position: 78% 50%; }
+    .veil { background: radial-gradient(ellipse 90% 34% at 50% 52%, rgba(232, 238, 240, .7), rgba(232, 238, 240, 0) 75%); }
+    .pillar .diamond { position: static; margin-left: 12px; }
+    .pillar-name { padding-top: 40px; margin-bottom: 28px; }
+    .pillar:nth-of-type(even) .pillar-inner { margin-left: 0; }
+    .work-head { flex-direction: column; align-items: flex-start; }
+    .row { grid-template-columns: 52px minmax(0, 1fr); row-gap: 18px; padding: 30px 0; align-items: start; }
+    .row .diamond { margin-left: 6px; margin-top: 2px; }
+    .row-desc, .row-links, .row-thumb { grid-column: 2; }
+    .row-links { flex-wrap: wrap; justify-content: flex-start; }
+    .row-thumb { display: block; aspect-ratio: 16 / 9; overflow: hidden; }
+    .row-thumb img, .row-thumb video { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+    .peek { display: none; }
+    .connect::before { background-position: 68% 50%; }
+    .connect::after { background:
+        linear-gradient(180deg, #0d242c 0%, rgba(13, 36, 44, .6) 18%, rgba(10, 29, 36, .5) 60%, rgba(10, 29, 36, .92) 100%), rgba(20, 70, 84, .22); }
+    .globe-copy { top: 12vh; max-width: none; right: var(--gutter); left: var(--gutter); gap: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .fog-layer > i, .connect::before { animation: none; }
+    .rv { transition-duration: .01s; transform: none; }
+}
+</style>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
-    <!-- 1. LOADER -->
-    <div id="loader">
-        <div class="loader-brand"><img src="Brand_Assets/Clariti_FaviCon.svg" alt="Clariti"></div>
-        <div id="loader-bar"><div id="loader-bar-fill"></div></div>
-        <div id="loader-percent">0%</div>
+<div class="sky" id="sky"></div>
+<div class="peak" id="peak"><div class="peak-img"><div class="peak-tint"></div></div></div>
+<div class="fog" id="fog"></div>
+<div class="veil"></div>
+
+<header class="nav">
+    <nav class="nav-tabs" aria-label="Sections">
+        <a href="#top" class="is-active" data-spy="top">Clariti</a>
+        <a href="#product" data-spy="product">Product Development</a>
+        <a href="#gtm" data-spy="gtm">Go to Market</a>
+        <a href="#opmodel" data-spy="opmodel">Operating Model</a>
+    </nav>
+    <div class="nav-right">
+        <a href="#work">Engagements <span class="nav-badge"><b>8</b></span></a>
+        <a href="#connect">Connect <span class="nav-dots"><i></i><i></i></span></a>
     </div>
+</header>
 
-    <!-- 2. FIXED HEADER -->
-    <header class="site-header">
-        <nav>
-            <a href="#work">Selected Engagements</a>
-            <a href="#about">Connect</a>
-        </nav>
-        <div class="header-end">
-            <button id="sound-toggle" class="sound-btn" aria-label="Mute audio">
-                <!-- Sound ON icon -->
-                <svg class="icon-sound-on" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-                </svg>
-                <!-- Sound OFF icon -->
-                <svg class="icon-sound-off" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                    <line x1="23" y1="9" x2="17" y2="15"/>
-                    <line x1="17" y1="9" x2="23" y2="15"/>
-                </svg>
-            </button>
-            <div class="logo" role="img" aria-label="Clariti"></div>
+<div class="rail">
+    <button type="button" id="toTop" aria-label="Back to top">&uarr;</button>
+    <div class="rail-progress" id="progress"><i></i></div>
+</div>
+
+<main>
+    <section class="hero light" id="top" data-sky="#e8eef0">
+        <div class="brand rv">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span class="brand-rule"></span>
+            <h1 class="brand-word">Clariti</h1>
         </div>
-    </header>
+        <p class="hero-foot">Scroll down to discover</p>
+    </section>
 
-    <!-- 3. HERO — canvas scroll effect -->
-    <div class="hero-standalone" id="hero">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1 class="hero-heading">
-                <span class="hero-line">Rise Above</span>
-                <span class="hero-line">Build with Clariti</span>
-            </h1>
-            <div class="scroll-indicator" aria-hidden="true">
-                <span class="scroll-indicator-label">Scroll</span>
-                <span class="scroll-indicator-line"></span>
+    <section class="statement light" data-sky="#e3eaed">
+        <h2 class="display rv">Clariti works hands-on<br>with founders and<br>their teams to<br>rise above.</h2>
+    </section>
+
+    <section class="intro light" data-sky="#d6e0e4">
+        <p class="lede rv">I execute product development, go to market, and operating model design initiatives, drawing on my operating experience and network.</p>
+        <a class="go rv" style="--d:1" href="#connect">Build with Clariti <span class="go-dot">&rarr;</span></a>
+    </section>
+
+    <section class="practice-head light" data-sky="#cbd8dc">
+        <h2 class="display rv">Three ways to work together, <em>each one hands-on with the team doing the building.</em></h2>
+        <p class="body rv" style="--d:1">The work sits inside the company, alongside founders and operators, from the first conversation through to launch.</p>
+    </section>
+
+    <section class="pillar dark" id="product" data-sky="#6b8792">
+        <div class="pillar-inner">
+            <div class="diamond rv"><span>1</span></div>
+            <p class="pillar-name rv">Product Development</p>
+            <h3 class="display rv" style="--d:1">From discovery<br>to shipped product.</h3>
+            <a class="go is-lined rv" style="--d:2" href="#work">See engagements <span class="go-dot">&rarr;</span></a>
+            <p class="pillar-refs rv" style="--d:3">Netbank &nbsp;·&nbsp; Oxygn &nbsp;·&nbsp; Enigmatig</p>
+        </div>
+    </section>
+
+    <section class="pillar dark" id="gtm" data-sky="#4f6c78">
+        <div class="pillar-inner">
+            <div class="diamond rv"><span>2</span></div>
+            <p class="pillar-name rv">Go to Market</p>
+            <h3 class="display rv" style="--d:1">Taking new products<br>to their first markets.</h3>
+            <a class="go is-lined rv" style="--d:2" href="#work">See engagements <span class="go-dot">&rarr;</span></a>
+            <p class="pillar-refs rv" style="--d:3">Almond FinTech &nbsp;·&nbsp; Chicago Global</p>
+        </div>
+    </section>
+
+    <section class="pillar dark" id="opmodel" data-sky="#34515d">
+        <div class="pillar-inner">
+            <div class="diamond rv"><span>3</span></div>
+            <p class="pillar-name rv">Operating Model Design</p>
+            <h3 class="display rv" style="--d:1">Designing how the<br>team runs as it scales.</h3>
+            <a class="go is-lined rv" style="--d:2" href="#connect">Start a conversation <span class="go-dot">&rarr;</span></a>
+        </div>
+    </section>
+
+    <section class="globe dark" id="globe" data-sky="#07171d">
+        <div class="globe-stick">
+            <canvas id="globeGL" aria-hidden="true"></canvas>
+            <canvas id="globeCanvas" aria-hidden="true"></canvas>
+            <div class="globe-copy">
+                <p class="eyebrow rv">Global by default</p>
+                <h2 class="display rv" style="--d:1">Money moves across borders. <em>So does the work.</em></h2>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- 4. CANVAS — fixed fullscreen, always visible -->
-    <canvas id="canvas"></canvas>
-
-    <!-- HERO LOGO — fixed sibling of canvas; multiply blend removes white bg, reveals brand color over sky -->
-    <div id="hero-logo" aria-hidden="true">
-        <img src="Brand_Assets/Clariti AI _ hero.jpg" alt="">
-    </div>
-
-    <!-- Frames loaded via JS: frames/frame_0001.webp … frame_0240.webp -->
-
-    <!-- 5. CLOUD TRAIL CANVAS -->
-    <canvas id="cloud-canvas"></canvas>
-
-    <!-- 6. DARK OVERLAY -->
-    <div id="dark-overlay"></div>
-
-
-    <!-- 8. SCROLL CONTAINER -->
-    <div id="scroll-container">
-
-        <!-- Section 1: Selected Engagements — position:fixed panel, revealed by a
-             scroll-scrubbed curtain (see initWorkTransition in app.js) -->
-        <section class="scroll-section section-work-full"
-                 data-enter="10" data-leave="30" data-enter-mobile="9" data-leave-mobile="42"
-                 data-transition="curtain"
-                 id="work">
-            <div class="work-full-inner">
-                <div class="work-full-header">
-                    <div class="work-full-header-text">
-                        <span class="section-label">Work</span>
-                        <h2 class="section-heading">Selected Engagements</h2>
-                    </div>
-                    <!-- Top scrub bar — mirrors the bottom one for quicker horizontal navigation -->
-                    <div class="work-scroll-bar-track work-scroll-bar-track--top">
-                        <div class="work-scroll-bar-thumb"></div>
-                    </div>
-                </div>
-
-                <!-- Arrow buttons sit outside the overflow:hidden scroll area -->
-                <button class="work-arrow work-arrow--left" aria-label="Scroll left">&#8249;</button>
-                <button class="work-arrow work-arrow--right" aria-label="Scroll right">&#8250;</button>
-
-                <!-- Horizontal scroll gallery -->
-                <div class="work-scroll-area" role="region" aria-label="Selected engagements gallery">
-                    <div class="work-scroll-track">
-                        <figure class="work-card work-card--client">
-                            <div class="work-card-img-wrap">
-                                <img src="Brand_Assets/SelectWorks/Netbank_Cards.jpg"
-                                     alt="Netbank — Banking-as-a-Service platform in the Philippines" width="1600" height="900"
-                                     loading="lazy" decoding="async">
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">Cards Issuing and Cards-as-a-Service product development for the Philippines&rsquo; fully regulated Banking-as-a-Service platform.</p>
-                                    <a class="work-card-site" href="https://netbank.ph/"
-                                       target="_blank" rel="noopener">netbank.ph&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">01</span>
-                                <span class="work-card-title">Netbank</span>
-                                <a class="work-card-link"
-                                   href="https://www.businesswire.com/news/home/20251210562237/en/Netbank-Selects-Thredd-to-Power-Next-Generation-Cards-as-a-Service-Offering-Across-the-Philippines"
-                                   target="_blank" rel="noopener">Read&nbsp;&#8599;</a>
-                                <span class="work-card-cat">Product</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--client">
-                            <div class="work-card-img-wrap">
-                                <img src="Brand_Assets/SelectWorks/Arki_Finance.jpg"
-                                     alt="Arki Finance — wealth platform for mass affluent investors" width="1600" height="900"
-                                     loading="lazy" decoding="async">
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">Advisory board member at the Singapore wealth platform, MAS-licensed to serve mass affluent investors across cash, income and growth.</p>
-                                    <a class="work-card-site" href="https://www.arkifinance.com/"
-                                       target="_blank" rel="noopener">arkifinance.com&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">02</span>
-                                <span class="work-card-title">Arki Finance</span>
-                                <a class="work-card-link"
-                                   href="https://www.straitstimes.com/business/spore-fintech-arki-finance-gets-mas-licence-to-serve-mass-affluent-investors"
-                                   target="_blank" rel="noopener">Read&nbsp;&#8599;</a>
-                                <span class="work-card-cat">Advisory</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--client">
-                            <div class="work-card-img-wrap">
-                                <img src="Brand_Assets/SelectWorks/Almond_FinTech.jpg"
-                                     alt="Almond FinTech — execution intelligence for cross-border FX" width="1600" height="900"
-                                     loading="lazy" decoding="async">
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">U.S.-based B2B cross-border payments startup. Its fiat-to-fiat intelligence engine evaluates routes in real time &mdash; optimizing path, timing and composition to deliver market-beating FX rates.</p>
-                                    <a class="work-card-site" href="https://www.almondfintech.com/"
-                                       target="_blank" rel="noopener">almondfintech.com&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">03</span>
-                                <span class="work-card-title">Almond FinTech</span>
-                                <span class="work-card-cat">Go-to-Market Consulting</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--client">
-                            <div class="work-card-img-wrap">
-                                <img src="Brand_Assets/SelectWorks/Oxygn.jpg"
-                                     alt="Oxygn — AI workforce for regulated fintech risk, compliance and governance" width="1600" height="900"
-                                     loading="lazy" decoding="async">
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">Product discovery for Oxygn, which gives regulated fintech startups &lsquo;bank-grade&rsquo; risk, compliance and governance without requiring them to build a bank-sized team.</p>
-                                    <a class="work-card-site" href="https://oxygn.xyz/"
-                                       target="_blank" rel="noopener">oxygn.xyz&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">04</span>
-                                <span class="work-card-title">Oxygn</span>
-                                <span class="work-card-cat">Product Discovery</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--video">
-                            <div class="work-card-img-wrap">
-                                <video autoplay muted loop playsinline
-                                       aria-label="Chicago Global showreel">
-                                    <source src="Brand_Assets/SelectWorks/CG_ShowReel.mp4" type="video/mp4">
-                                </video>
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">Commercialisation of Parallax, Chicago Global&rsquo;s AI-powered quantitative analytics platform for investment teams &mdash; covering 50,000+ stocks and 15,000+ ETFs across 48 markets.</p>
-                                    <a class="work-card-site" href="https://parallax.chicago.global/"
-                                       target="_blank" rel="noopener">parallax.chicago.global&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">05</span>
-                                <span class="work-card-title">Chicago Global</span>
-                                <span class="work-card-cat">Commercialisation</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--youtube work-card--duo" data-youtube="6lHIqUsRMFs">
-                            <div class="work-card-img-wrap">
-                                <img src="https://img.youtube.com/vi/6lHIqUsRMFs/maxresdefault.jpg"
-                                     onerror="this.onerror=null;this.src='https://img.youtube.com/vi/6lHIqUsRMFs/hqdefault.jpg';"
-                                     alt="Brand Storytelling film" loading="lazy">
-                                <img src="Brand_Assets/SelectWorks/E_Branding.jpg"
-                                     alt="Brand Re-design" loading="lazy">
-                                <img src="Brand_Assets/SelectWorks/E_Website.jpg"
-                                     alt="Website Design" loading="lazy">
-                                <div class="work-card-info">
-                                    <p class="work-card-desc">Post-IPO re-branding &mdash; brand identity, website and brand film &mdash; alongside product capability development for the one-stop offshore services provider.</p>
-                                    <a class="work-card-site" href="https://www.enigmatig.com/"
-                                       target="_blank" rel="noopener">enigmatig.com&nbsp;&#8599;</a>
-                                </div>
-                                <span class="work-card-play" aria-hidden="true">&#9654;</span>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">06</span>
-                                <span class="work-card-title">Enigmatig</span>
-                                <span class="work-card-cat">Rebrand &amp; Product</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card">
-                            <div class="work-card-img-wrap">
-                                <img src="Brand_Assets/SelectWorks/LBS_IRSeminar.jpg"
-                                     alt="LBS Singapore Investor Relations Seminar panel" loading="lazy">
-                                <div class="work-card-info">
-                                    <a class="work-card-site" href="https://lbs-comm.com/"
-                                       target="_blank" rel="noopener">lbs-comm.com&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">07</span>
-                                <span class="work-card-title">LBS Communications</span>
-                                <a class="work-card-link"
-                                   href="https://lbs-comm.com/ai-digital-narratives-and-investor-trust-take-centre-stage-at-lbs-singapore-investor-relations-seminar/"
-                                   target="_blank" rel="noopener">Read&nbsp;&#8599;</a>
-                                <span class="work-card-cat">Speaking</span>
-                            </figcaption>
-                        </figure>
-                        <figure class="work-card work-card--video work-card--brand">
-                            <div class="work-card-img-wrap">
-                                <video autoplay muted loop playsinline
-                                       aria-label="Gurung go-to-market execution showreel">
-                                    <source src="Brand_Assets/SelectWorks/G_ShowReel.mp4" type="video/mp4">
-                                </video>
-                                <div class="work-card-info">
-                                    <a class="work-card-site" href="https://www.gurungtea.com/"
-                                       target="_blank" rel="noopener">gurungtea.com&nbsp;&#8599;</a>
-                                </div>
-                            </div>
-                            <figcaption>
-                                <span class="work-card-num">08</span>
-                                <span class="work-card-title">Gurung</span>
-                                <span class="work-card-cat">Branding</span>
-                            </figcaption>
-                        </figure>
-                    </div>
-                    <!-- Custom scrollbar track (clickable + draggable) -->
-                    <div class="work-scroll-bar-track">
-                        <div class="work-scroll-bar-thumb"></div>
-                    </div>
-                </div>
-            </div><!-- .work-full-inner -->
-        </section>
-
-        <!-- Section 2: About + Contact — top = 0.795×300+50 = 288vh -->
-        <section class="scroll-section section-content align-center"
-                 data-enter="62" data-leave="97" data-enter-mobile="48" data-leave-mobile="97"
-                 data-animation="stagger-up"
-                 data-persist="true" id="about" style="top: 288vh;">
-            <div class="section-inner">
-                <span class="section-label">Connect</span>
-                <h2 class="section-heading">Rise Above</h2>
-                <p class="section-body">I work hands-on with founders and their teams to execute product development, go to market, and operating model design initiatives drawing on my operating experience and network.</p>
-                <span id="contact"></span>
-                <div class="contact-block">
-                    <a href="mailto:justin@claritifin.com" class="cta-button">Start a Conversation<span class="cta-arrow">&rarr;</span></a>
-                    <div class="contact-meta">
-                        <a href="mailto:justin@claritifin.com">justin@claritifin.com</a>
-                        <span class="contact-meta-sep" aria-hidden="true"></span>
-                        <span>Singapore</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </div><!-- #scroll-container -->
-
-    <!-- FOOTER -->
-    <footer>
-        <!-- Mountain scene: minimal Three.js background for footer -->
-        <div id="mountain-scene"></div>
-        <div class="footer-content">
-            <div class="footer-brand"><span class="footer-brand-logo" role="img" aria-label="Clariti"></span></div>
-            <div class="footer-links">
-                <a href="#work">Selected Engagements</a>
-                <a href="#about">Connect</a>
-            </div>
-            <div class="footer-bottom">© 2026 Clariti. Made in SG.</div>
+    <section class="work dark" id="work" data-sky="#0f2a33">
+        <div class="work-head">
+            <h2 class="display rv">Selected<br><em>Engagements</em></h2>
+            <p class="work-count rv" style="--d:1">08 companies &nbsp;·&nbsp; financial services first</p>
         </div>
-    </footer>
+        <div class="rows" id="rows">
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/Netbank_Cards.jpg">
+                <div class="diamond"><span>01</span></div>
+                <h3 class="row-name">Netbank<span class="row-tag">Product</span></h3>
+                <p class="row-desc">Cards Issuing and Cards-as-a-Service product development for the Philippines&rsquo; fully regulated Banking-as-a-Service platform.</p>
+                <div class="row-links">
+                    <a class="read" href="https://www.businesswire.com/news/home/20251210562237/en/Netbank-Selects-Thredd-to-Power-Next-Generation-Cards-as-a-Service-Offering-Across-the-Philippines" target="_blank" rel="noopener">Read</a>
+                    <a href="https://netbank.ph/" target="_blank" rel="noopener">netbank.ph <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/Arki_Finance.jpg">
+                <div class="diamond"><span>02</span></div>
+                <h3 class="row-name">Arki Finance<span class="row-tag">Advisory</span></h3>
+                <p class="row-desc">Advisory board member at the Singapore wealth platform, MAS-licensed to serve mass affluent investors across cash, income and growth.</p>
+                <div class="row-links">
+                    <a class="read" href="https://www.straitstimes.com/business/spore-fintech-arki-finance-gets-mas-licence-to-serve-mass-affluent-investors" target="_blank" rel="noopener">Read</a>
+                    <a href="https://www.arkifinance.com/" target="_blank" rel="noopener">arkifinance.com <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/Almond_FinTech.jpg">
+                <div class="diamond"><span>03</span></div>
+                <h3 class="row-name">Almond FinTech<span class="row-tag">Go-to-Market Consulting</span></h3>
+                <p class="row-desc">U.S.-based B2B cross-border payments startup. Its fiat-to-fiat intelligence engine evaluates routes in real time &mdash; optimizing path, timing and composition to deliver market-beating FX rates.</p>
+                <div class="row-links">
+                    <a href="https://www.almondfintech.com/" target="_blank" rel="noopener">almondfintech.com <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/Oxygn.jpg">
+                <div class="diamond"><span>04</span></div>
+                <h3 class="row-name">Oxygn<span class="row-tag">Product Discovery</span></h3>
+                <p class="row-desc">Product discovery for Oxygn, which gives regulated fintech startups &lsquo;bank-grade&rsquo; risk, compliance and governance without requiring them to build a bank-sized team.</p>
+                <div class="row-links">
+                    <a href="https://oxygn.xyz/" target="_blank" rel="noopener">oxygn.xyz <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-video="Brand_Assets/SelectWorks/CG_ShowReel.mp4">
+                <div class="diamond"><span>05</span></div>
+                <h3 class="row-name">Chicago Global<span class="row-tag">Commercialisation</span></h3>
+                <p class="row-desc">Commercialisation of Parallax, Chicago Global&rsquo;s AI-powered quantitative analytics platform for investment teams &mdash; covering 50,000+ stocks and 15,000+ ETFs across 48 markets.</p>
+                <div class="row-links">
+                    <a href="https://parallax.chicago.global/" target="_blank" rel="noopener">parallax.chicago.global <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/E_Branding.jpg">
+                <div class="diamond"><span>06</span></div>
+                <h3 class="row-name">Enigmatig<span class="row-tag">Rebrand &amp; Product</span></h3>
+                <p class="row-desc">Post-IPO re-branding &mdash; brand identity, website and brand film &mdash; alongside product capability development for the one-stop offshore services provider.</p>
+                <div class="row-links">
+                    <a href="https://www.enigmatig.com/" target="_blank" rel="noopener">enigmatig.com <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-img="Brand_Assets/SelectWorks/LBS_IRSeminar.jpg">
+                <div class="diamond"><span>07</span></div>
+                <h3 class="row-name">LBS Communications<span class="row-tag">Speaking</span></h3>
+                <p class="row-desc">Speaker at the LBS Singapore Investor Relations Seminar on AI, digital narratives and investor trust.</p>
+                <div class="row-links">
+                    <a class="read" href="https://lbs-comm.com/ai-digital-narratives-and-investor-trust-take-centre-stage-at-lbs-singapore-investor-relations-seminar/" target="_blank" rel="noopener">Read</a>
+                    <a href="https://lbs-comm.com/" target="_blank" rel="noopener">lbs-comm.com <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+            <article class="row rv" data-video="Brand_Assets/SelectWorks/G_ShowReel.mp4">
+                <div class="diamond"><span>08</span></div>
+                <h3 class="row-name">Gurung<span class="row-tag">Branding</span></h3>
+                <p class="row-desc">Brand identity and show reel for the tea company.</p>
+                <div class="row-links">
+                    <a href="https://www.gurungtea.com/" target="_blank" rel="noopener">gurungtea.com <span class="go-dot">&#8599;</span></a>
+                </div>
+            </article>
+        </div>
+    </section>
 
-    <!-- BACKGROUND AUDIO -->
-    <audio id="bg-audio" src="Brand_Assets/SoundScape.m4a" loop preload="auto"></audio>
+    <section class="connect dark" id="connect" data-sky="#0d242c">
+        <p class="eyebrow rv">Connect</p>
+        <h2 class="display rv" style="--d:1">Rise<br>Above</h2>
+        <p class="lede rv" style="--d:2; max-width: 24em">I work hands-on with founders and their teams to execute product development, go to market, and operating model design initiatives drawing on my operating experience and network.</p>
+        <a class="go is-lined rv" style="--d:3" href="mailto:justin@claritifin.com">Start a conversation <span class="go-dot">&rarr;</span></a>
+        <div class="connect-meta rv" style="--d:4">
+            <a href="mailto:justin@claritifin.com">justin@claritifin.com</a>
+            <span>Singapore</span>
+        </div>
+    </section>
+</main>
 
-    <!-- CDN scripts — ORDER MATTERS -->
-    <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-    <script src="js/app.js"></script>
+<footer>
+    <nav><a href="#work">Selected Engagements</a><a href="#connect">Connect</a></nav>
+    <span>&copy; 2026 Clariti. Made in SG.</span>
+</footer>
 
-    <!-- Work scroll gallery -->
-    <script>
+<div class="peek" id="peek" aria-hidden="true"><img alt=""><video muted loop playsinline preload="none" hidden></video></div>
+
+<script>
+(function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ── Fog: one tileable noise texture, drawn once, reused on drifting layers ── */
+    function fogTexture(size, cells, seed) {
+        var c = document.createElement('canvas'); c.width = c.height = size;
+        var ctx = c.getContext('2d'), img = ctx.createImageData(size, size), d = img.data;
+        function rnd(x, y, o) {
+            var n = Math.sin((x * 127.1 + y * 311.7 + o * 74.7 + seed) * 43758.5453) * 43758.5453;
+            return n - Math.floor(n);
+        }
+        function noise(x, y, period, o) {
+            var x0 = Math.floor(x), y0 = Math.floor(y), fx = x - x0, fy = y - y0;
+            fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
+            var x1 = (x0 + 1) % period, y1 = (y0 + 1) % period; x0 %= period; y0 %= period;
+            var a = rnd(x0, y0, o), b = rnd(x1, y0, o), cc = rnd(x0, y1, o), dd = rnd(x1, y1, o);
+            return a + (b - a) * fx + (cc - a) * fy + (a - b - cc + dd) * fx * fy;
+        }
+        for (var y = 0; y < size; y++) for (var x = 0; x < size; x++) {
+            var v = 0, amp = .5, p = cells;
+            for (var o = 0; o < 5; o++) { v += amp * noise(x / size * p, y / size * p, p, o); amp *= .5; p *= 2; }
+            v = (v - .36) / .34; v = Math.max(0, Math.min(1, v)); v = v * v * (3 - 2 * v);
+            var i = (y * size + x) * 4; d[i] = d[i + 1] = d[i + 2] = 255; d[i + 3] = v * 255;
+        }
+        ctx.putImageData(img, 0, 0);
+        return c.toDataURL('image/png');
+    }
+    var fog = document.getElementById('fog');
+    var layers = [
+        { tile: 1900, speed: 150, depth: .10, opacity: .55, seed: 3,  cells: 3 },
+        { tile: 1300, speed: 95,  depth: .22, opacity: .75, seed: 11, cells: 4 },
+        { tile: 2600, speed: 210, depth: .38, opacity: .5, seed: 27, cells: 2 }
+    ].map(function (l) {
+        var el = document.createElement('div'), inner = document.createElement('i');
+        el.className = 'fog-layer';
+        el.style.cssText = 'width:calc(100vw + ' + l.tile + 'px);--tile:' + l.tile + 'px;opacity:' + l.opacity +
+            ';background-image:url(' + fogTexture(256, l.cells, l.seed) + ');background-size:' + l.tile + 'px ' + Math.round(l.tile * .62) + 'px';
+        inner.style.animationDuration = l.speed + 's';
+        el.appendChild(inner); el.style.backgroundImage = 'none';
+        inner.style.backgroundImage = 'url(' + fogTexture(256, l.cells, l.seed) + ')';
+        inner.style.backgroundSize = l.tile + 'px ' + Math.round(l.tile * .62) + 'px';
+        fog.appendChild(el); l.el = el; return l;
+    });
+
+    /* ── Scroll-driven sky: colour follows whichever section is centred ── */
+    var sky = document.getElementById('sky'), peak = document.getElementById('peak');
+    var progress = document.getElementById('progress');
+    var stops = [];
+    function hex(h) { return [parseInt(h.substr(1, 2), 16), parseInt(h.substr(3, 2), 16), parseInt(h.substr(5, 2), 16)]; }
+    function measure() {
+        stops = [].map.call(document.querySelectorAll('[data-sky]'), function (s) {
+            return { y: s.offsetTop + Math.min(s.offsetHeight / 2, window.innerHeight * .35), c: hex(s.dataset.sky) };
+        });
+    }
+    var spy = [].slice.call(document.querySelectorAll('[data-spy]'));
+    var spyTargets = spy.map(function (a) { return document.getElementById(a.dataset.spy); });
+    var cur = 0, raf = null, lastY = window.scrollY;
+    function paint() {
+        raf = null;
+        var target = window.scrollY; cur += (target - cur) * (reduce ? 1 : .12);
+        if (Math.abs(target - cur) > .5) raf = requestAnimationFrame(paint); else cur = target;
+        var vh = window.innerHeight, mid = cur + vh * .7, a = stops[0], b = stops[stops.length - 1], i;
+        for (i = 0; i < stops.length - 1; i++) if (mid >= stops[i].y && mid <= stops[i + 1].y) { a = stops[i]; b = stops[i + 1]; break; }
+        if (mid < stops[0].y) b = a; else if (mid > b.y) a = b;
+        var t = a === b ? 0 : (mid - a.y) / (b.y - a.y);
+        var rgb = [0, 1, 2].map(function (k) { return Math.round(a.c[k] + (b.c[k] - a.c[k]) * t); });
+        sky.style.backgroundColor = 'rgb(' + rgb.join(',') + ')';
+        var lum = (rgb[0] * .299 + rgb[1] * .587 + rgb[2] * .114) / 255;
+        document.body.classList.toggle('is-dark', lum < .68);
+        document.body.classList.toggle('is-scrolled', target > vh * .35);
+        if (Math.abs(target - lastY) > 4) { document.body.classList.toggle('nav-away', target > lastY && target > vh * .6); lastY = target; }
+        // fly into the peak, then leave it behind
+        var h = Math.min(1, cur / (vh * 1.5));
+        peak.style.transform = 'translate3d(0,' + (-cur * .12).toFixed(1) + 'px,0) scale(' + (1 + h * .55).toFixed(3) + ')';
+        peak.style.opacity = (1 - Math.max(0, (h - .35) / .65)).toFixed(3);
+        // fog thins out as the sky deepens
+        var thin = Math.max(.14, Math.min(1, (lum - .42) / .46));
+        layers.forEach(function (l) {
+            l.el.style.transform = 'translate3d(0,' + (-(cur * l.depth) % (vh * .1)).toFixed(1) + 'px,0)';
+            l.el.style.opacity = (l.opacity * thin).toFixed(3);
+        });
+        var max = document.documentElement.scrollHeight - vh;
+        progress.style.setProperty('--p', max > 0 ? (target / max).toFixed(3) : 0);
+        var active = 0;
+        spyTargets.forEach(function (el, n) { if (el && el.offsetTop - vh * .5 <= target) active = n; });
+        if (spyTargets[3] && target > document.getElementById('work').offsetTop - vh * .5) active = -1;
+        spy.forEach(function (aEl, n) { aEl.classList.toggle('is-active', n === active || (active === -1 && n === 0)); });
+    }
+    function request() { if (!raf) raf = requestAnimationFrame(paint); }
+    measure(); cur = window.scrollY; paint();
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', function () { measure(); request(); });
+    window.addEventListener('load', function () { measure(); request(); });
+
+    document.getElementById('toTop').addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+            var el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
+            e.preventDefault(); el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        });
+    });
+
+    /* ── Night globe with cross-border flows: rises as the section scrolls ── */
     (function () {
-        var track = document.querySelector('.work-scroll-track');
-        var area  = document.querySelector('.work-scroll-area');
-        var bars  = [].slice.call(document.querySelectorAll('.work-scroll-bar-track')).map(function (bt) {
-            return { bar: bt, thumb: bt.querySelector('.work-scroll-bar-thumb') };
-        });
-        if (!track || !bars.length) return;
+        var section = document.getElementById('globe'), glc = document.getElementById('globeGL'), canvas = document.getElementById('globeCanvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d'), w = 0, h = 0, dpr = 1, live = false, t0 = performance.now();
+        var RAD = Math.PI / 180;
 
-        // Touch devices snap per card, so an arrow tap must move a whole card
-        // (a partial step would just snap back); desktop keeps a ~1-card glide
-        var touchSnap = window.matchMedia('(hover: none)');
-        function cardStep() {
-            var cards = track.querySelectorAll('.work-card');
-            if (touchSnap.matches && cards.length > 1) return cards[1].offsetLeft - cards[0].offsetLeft;
-            return Math.round(window.innerWidth * 0.32);
+        /* WebGL sphere: NASA night-lights map, regraded to the Clariti teal with amber city lights */
+        var gl = null, U = {};
+        try { gl = glc.getContext('webgl', { premultipliedAlpha: true, antialias: false }); } catch (e) {}
+        if (gl) {
+            var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+            var fs = [
+                'precision highp float;',
+                'uniform vec2 uC;uniform float uR,uLon,uLat;uniform sampler2D uTex;',
+                'void main(){',
+                ' vec2 d=(gl_FragCoord.xy-uC)/uR;float r=length(d);vec3 col;float a;',
+                ' float g=max(r-1.,0.);float glow=exp(-g*30.)*.7+exp(-g*8.)*.2;',
+                ' vec3 halo=vec3(.52,.84,.9)*glow;',
+                ' if(r<1.){',
+                '  float z=sqrt(1.-r*r);float sl=sin(uLat),cl=cos(uLat);',
+                '  float lat=asin(clamp(z*sl+d.y*cl,-1.,1.));',
+                '  float lon=uLon+atan(d.x,z*cl-d.y*sl);',
+                '  vec3 t=texture2D(uTex,vec2(fract(lon/6.2831853+.5),.5-lat/3.14159265)).rgb;',
+                '  float lights=smoothstep(.1,.4,t.r);',
+                '  vec3 base=vec3(.012,.04,.052)+vec3(.16,.6,.72)*(t.b*.75+t.g*.25)*(1.-lights)*.95;',
+                '  float lit=clamp(dot(normalize(vec3(-.35,.75,.55)),vec3(d,z)),0.,1.);',
+                '  base*=.4+.8*lit;',
+                '  col=base+vec3(1.,.74,.42)*lights*1.25+vec3(1.,.95,.85)*pow(lights,3.)*.5;',
+                '  float rim=pow(1.-z,3.4);col+=vec3(.42,.8,.88)*rim*.9;',
+                '  float e=smoothstep(1.,1.-2.5/uR,r);col=mix(halo,col,e);a=mix(glow,1.,e);',
+                ' }else{col=halo;a=glow;}',
+                ' gl_FragColor=vec4(col,a);',
+                '}'].join('\n');
+            var mk = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+            var prog = gl.createProgram();
+            gl.attachShader(prog, mk(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(prog);
+            if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) gl = null;
+            else {
+                gl.useProgram(prog);
+                var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+                var loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+                ['uC', 'uR', 'uLon', 'uLat', 'uTex'].forEach(function (n) { U[n] = gl.getUniformLocation(prog, n); });
+                var tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([4, 10, 30, 255]));
+                var img = new Image(); img.crossOrigin = 'anonymous';
+                img.onload = function () {
+                    var max = gl.getParameter(gl.MAX_TEXTURE_SIZE), src = img;
+                    if (img.naturalWidth > max) { src = document.createElement('canvas'); src.width = max; src.height = max / 2; src.getContext('2d').drawImage(img, 0, 0, max, max / 2); }
+                    gl.bindTexture(gl.TEXTURE_2D, tex);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                };
+                img.src = 'https://cdn.jsdelivr.net/npm/three-globe@2.31.0/example/img/earth-night.jpg';
+            }
         }
-        var HOVER_SPEED = 4;
-        var MOUSE_SPEED = 5;
-        var DEAD_ZONE   = 0.14;
 
-        var hoverDir = 0;
-        var mouseX   = -1;
-        var inArea   = false;
-        var rafId    = null;
+        /* Hubs and routes */
+        var H = {
+            SIN: [103.82, 1.35], MNL: [121.0, 14.6], HKG: [114.17, 22.3], TYO: [139.7, 35.7], SYD: [151.2, -33.9],
+            BOM: [72.88, 19.08], DXB: [55.3, 25.2], LON: [-0.12, 51.5], NYC: [-74.0, 40.7], SFO: [-122.4, 37.8],
+            JKT: [106.8, -6.2], BKK: [100.5, 13.75], SEL: [127.0, 37.5], SHA: [121.5, 31.2],
+            FRA: [8.68, 50.11], PAR: [2.35, 48.86], ZRH: [8.54, 47.37], MAD: [-3.7, 40.42], IST: [28.98, 41.01],
+            JNB: [28.05, -26.2], LOS: [3.38, 6.52], NBO: [36.82, -1.29], GRU: [-46.63, -23.55], MEX: [-99.13, 19.43], YYZ: [-79.38, 43.65]
+        };
+        var SYMS = ['$', '\u20AC', '\u20BF', '\u00A3', '\u039E', '\u00A5', '\u20AE', '\u20B9', '$', '\u20BF', '\u20AC', '\u039E'];   // $ € ₿ £ Ξ ¥ ₮ ₹
+        var pairs = ['SIN-MNL', 'SIN-HKG', 'SIN-TYO', 'SIN-SYD', 'SIN-BOM', 'SIN-DXB', 'SIN-LON', 'SIN-SFO', 'SIN-JKT', 'SIN-BKK', 'SIN-SEL',
+            'MNL-SFO', 'MNL-HKG', 'MNL-TYO', 'MNL-DXB', 'HKG-SHA', 'HKG-LON', 'TYO-SFO', 'LON-NYC', 'LON-DXB', 'BOM-DXB', 'SYD-SFO', 'SEL-SFO',
+            'FRA-NYC', 'FRA-SIN', 'FRA-DXB', 'PAR-LOS', 'PAR-YYZ', 'ZRH-HKG', 'ZRH-GRU', 'MAD-MEX', 'MAD-GRU', 'IST-FRA', 'IST-BOM', 'LON-JNB', 'LON-NBO',
+            'NYC-GRU', 'NYC-MEX', 'YYZ-LON', 'JNB-DXB', 'NBO-BOM', 'GRU-LOS', 'MEX-SFO', 'TYO-FRA', 'SYD-HKG'];
+        function vec(ll) { var lo = ll[0] * RAD, la = ll[1] * RAD; return [Math.cos(la) * Math.cos(lo), Math.cos(la) * Math.sin(lo), Math.sin(la)]; }
+        var hubs = Object.keys(H).map(function (k) { return { k: k, v: vec(H[k]) }; });
+        var N = 56;
+        var routes = pairs.map(function (pr, i) {
+            var ab = pr.split('-'), a = vec(H[ab[0]]), b = vec(H[ab[1]]);
+            var om = Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))), so = Math.sin(om);
+            var lift = .05 + .34 * (om / Math.PI), pts = [];
+            for (var j = 0; j <= N; j++) {
+                var f = j / N, ka = Math.sin((1 - f) * om) / so, kb = Math.sin(f * om) / so, s = 1 + lift * Math.sin(Math.PI * f);
+                pts.push([(a[0] * ka + b[0] * kb) * s, (a[1] * ka + b[1] * kb) * s, (a[2] * ka + b[2] * kb) * s]);
+            }
+            return { sym: SYMS[i % SYMS.length], pts: pts, end: i % 2 ? a : b, rev: i % 2 === 1, speed: .16 + (i * 37 % 11) * .012, off: (i * 0.618) % 1, om: om };
+        });
 
-        /* ── Custom eased scroll (avoids Lenis/scrollBy conflicts) ── */
-        var easingTarget = null;
-        var easingRaf    = null;
+        var cx, cy, R, sl0, cl0, sp0, cp0;                 // view state for this frame
+        function proj(v, out) {
+            var x = -sl0 * v[0] + cl0 * v[1], wv = cl0 * v[0] + sl0 * v[1];
+            var y = cp0 * v[2] - sp0 * wv, z = sp0 * v[2] + cp0 * wv;
+            out[0] = cx + R * x; out[1] = cy - R * y; out[2] = z; out[3] = (z > 0 || x * x + y * y > 1) ? 1 : 0;
+            return out;
+        }
+        var P = [0, 0, 0, 0], Q = [0, 0, 0, 0];
+        function stroke(r, from, to, style, lw) {          // polyline over the visible part of a route
+            ctx.beginPath(); var pen = false;
+            for (var j = from; j <= to; j++) {
+                proj(r.pts[j], P);
+                if (!P[3]) { pen = false; continue; }
+                if (pen) ctx.lineTo(P[0], P[1]); else { ctx.moveTo(P[0], P[1]); pen = true; }
+            }
+            ctx.strokeStyle = style; ctx.lineWidth = lw; ctx.stroke();
+        }
+        function dot(x, y, rad, alpha) {
+            var g = ctx.createRadialGradient(x, y, 0, x, y, rad);
+            g.addColorStop(0, 'rgba(255,255,255,' + alpha + ')'); g.addColorStop(.25, 'rgba(190,236,242,' + alpha * .6 + ')'); g.addColorStop(1, 'rgba(165,215,222,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832); ctx.fill();
+        }
 
-        function easeTo(destination) {
-            destination = Math.max(0, Math.min(destination, track.scrollWidth - track.clientWidth));
-            if (easingRaf) cancelAnimationFrame(easingRaf);
-            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-            stopWheelGlide();
-            var start     = track.scrollLeft;
-            var distance  = destination - start;
-            var duration  = 420; // ms
-            var startTime = null;
-            // Touch devices use scroll-snap; suspend it so each eased step isn't snapped back
-            track.classList.add('is-easing');
+        function size() {
+            dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+            w = canvas.clientWidth; h = canvas.clientHeight;
+            canvas.width = glc.width = Math.round(w * dpr); canvas.height = glc.height = Math.round(h * dpr);
+            if (gl) gl.viewport(0, 0, glc.width, glc.height);
+        }
+        function ease(x) { return x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x); }
+        function draw(now) {
+            if (!live) return;
+            requestAnimationFrame(draw);
+            var rect = section.getBoundingClientRect(), span = rect.height - h;
+            var t = ease(span > 0 ? (-rect.top + h * .7) / (span * .8 + h * .7) : 1);
+            var small = w < 900, sec = (now - t0) / 1000;
+            R = small ? h * .52 : Math.max(w * .6, h * .98);
+            cx = small ? w * .5 : w * .56;
+            cy = h * (1.04 - (small ? .56 : .6) * t) + R;
+            var lon0 = (8 + t * 46 + (reduce ? 0 : sec * 1.2)) * RAD, lat0 = (small ? -34 : -38) * RAD;
+            sl0 = Math.sin(lon0); cl0 = Math.cos(lon0); sp0 = Math.sin(lat0); cp0 = Math.cos(lat0);
 
-            function step(now) {
-                if (!startTime) startTime = now;
-                var elapsed  = now - startTime;
-                var progress = Math.min(elapsed / duration, 1);
-                // ease-out cubic
-                var eased    = 1 - Math.pow(1 - progress, 3);
-                track.scrollLeft = start + distance * eased;
-                syncThumb();
-                syncArrows();
-                if (progress < 1) {
-                    easingRaf = requestAnimationFrame(step);
-                } else {
-                    easingRaf = null;
-                    track.classList.remove('is-easing');
+            if (gl) {
+                gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.uniform2f(U.uC, cx * dpr, (h - cy) * dpr); gl.uniform1f(U.uR, R * dpr);
+                gl.uniform1f(U.uLon, lon0); gl.uniform1f(U.uLat, lat0); gl.uniform1i(U.uTex, 0);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            }
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+            if (!gl) {                                     // plain fallback sphere
+                var sea = ctx.createRadialGradient(cx, cy - R * .6, R * .1, cx, cy, R);
+                sea.addColorStop(0, '#1d4552'); sea.addColorStop(1, '#0a1f27');
+                ctx.fillStyle = sea; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 6.2832); ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+            var heads = [];
+            routes.forEach(function (r) {
+                stroke(r, 0, N, 'rgba(150,214,224,.3)', 1.1);
+                var cycle = 1.5, f = reduce ? .6 : ((sec * r.speed / Math.max(.35, r.om) + r.off * cycle) % cycle);
+                if (f <= 1.18) {                           // travelling payment
+                    var head = Math.min(1, f), tail = Math.max(0, f - .18), steps = 5;
+                    for (var s = 0; s < steps; s++) {
+                        var a0 = tail + (head - tail) * s / steps, a1 = tail + (head - tail) * (s + 1) / steps;
+                        var i0 = Math.max(0, Math.floor((r.rev ? 1 - a1 : a0) * N)), i1 = Math.min(N, Math.ceil((r.rev ? 1 - a0 : a1) * N));
+                        if (i1 > i0) stroke(r, i0, i1, 'rgba(214,246,250,' + (.12 + .7 * (s + 1) / steps) + ')', 1.6);
+                    }
+                    if (f <= 1) { proj(r.pts[Math.max(0, Math.min(N, Math.round((r.rev ? 1 - head : head) * N)))], Q); if (Q[3]) { dot(Q[0], Q[1], 9, .95); heads.push(Q[0], Q[1], r.sym); } }
                 }
-            }
-            easingRaf = requestAnimationFrame(step);
-        }
-
-        /* ── Wheel / trackpad: vertical scrolling over the gallery moves it
-              sideways; at either end the gesture passes through to the page ── */
-        var wheelTarget = null;
-        var wheelRaf    = null;
-
-        function stopWheelGlide() {
-            if (wheelRaf) cancelAnimationFrame(wheelRaf);
-            wheelRaf = null;
-            wheelTarget = null;
-        }
-
-        function wheelGlide() {
-            var diff = wheelTarget - track.scrollLeft;
-            if (Math.abs(diff) < 0.5) {
-                track.scrollLeft = wheelTarget;
-                stopWheelGlide();
-                track.classList.remove('is-easing');
-            } else {
-                var before = track.scrollLeft;
-                var step   = diff * 0.2;
-                // at least 1px per frame, so integer-pixel scrolling can't stall short of the target
-                if (Math.abs(step) < 1) step = Math.abs(diff) < 1 ? diff : (diff > 0 ? 1 : -1);
-                track.scrollLeft += step;
-                if (Math.abs(track.scrollLeft - before) < 0.1) { // clamped at an edge
-                    stopWheelGlide();
-                    track.classList.remove('is-easing');
-                } else {
-                    wheelRaf = requestAnimationFrame(wheelGlide);
+                if (f > 1) {                               // settles at the destination
+                    proj(r.end, Q);
+                    if (Q[2] > .02) {
+                        var k = (f - 1) / (cycle - 1);
+                        ctx.beginPath(); ctx.arc(Q[0], Q[1], 3 + k * 20, 0, 6.2832);
+                        ctx.strokeStyle = 'rgba(214,246,250,' + (.7 * (1 - k)) + ')'; ctx.lineWidth = 1.2; ctx.stroke();
+                    }
                 }
-            }
-            syncThumb();
-            syncArrows();
-        }
-
-        area.addEventListener('wheel', function (e) {
-            if (e.ctrlKey) return; // pinch-zoom
-            // Sideways trackpad swipes scroll the track natively; just keep
-            // the page's smooth-scroller from swallowing them
-            if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.stopPropagation(); return; }
-
-            var unit = e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? track.clientWidth : 1);
-            var dy   = e.deltaY * unit;
-            var max  = track.scrollWidth - track.clientWidth;
-            var from = wheelTarget === null ? track.scrollLeft : wheelTarget;
-            // Already at the end being scrolled towards (a few px of slack for
-            // layout rounding): let the page scroll on
-            if ((dy > 0 && from >= max - 4) || (dy < 0 && from <= 1)) return;
-            var to = Math.max(0, Math.min(max, from + dy));
-
-            e.preventDefault();
-            e.stopPropagation();
-            if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
-            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-            track.classList.add('is-easing');
-            wheelTarget = to;
-            if (!wheelRaf) wheelRaf = requestAnimationFrame(wheelGlide);
-        }, { passive: false });
-
-        /* ── Keyboard: left / right arrows step through the cards ── */
-        var workSection = document.getElementById('work');
-        document.addEventListener('keydown', function (e) {
-            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-            if (e.altKey || e.ctrlKey || e.metaKey) return;
-            if (!workSection.classList.contains('is-visible')) return;
-            var t = e.target;
-            if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
-            e.preventDefault();
-            easeTo(track.scrollLeft + (e.key === 'ArrowRight' ? 1 : -1) * cardStep());
-        });
-
-        /* ── Arrow clicks — delegated at document level so pointer-events never blocks them ── */
-        document.addEventListener('click', function (e) {
-            var btn = e.target.closest('.work-arrow');
-            if (!btn) return;
-            var dir = btn.classList.contains('work-arrow--left') ? -1 : 1;
-            easeTo(track.scrollLeft + dir * cardStep());
-        });
-
-        /* ── Click a card: expand it into showcase size, centre it in view ── */
-        function collapseCard(card) {
-            card.classList.remove('is-expanded');
-            var iframe = card.querySelector('.work-card-iframe');
-            if (iframe) iframe.remove();
-        }
-
-        track.addEventListener('click', function (e) {
-            if (e.target.closest('a')) return; // caption links navigate, never toggle
-            var card = e.target.closest('.work-card');
-            if (!card) return;
-            var wasExpanded = card.classList.contains('is-expanded');
-            var open = track.querySelectorAll('.work-card.is-expanded');
-            for (var i = 0; i < open.length; i++) collapseCard(open[i]);
-            if (wasExpanded) return; // second click collapses
-
-            card.classList.add('is-expanded');
-
-            // YouTube showcase: swap thumbnail for an inline muted-autoplay embed
-            if (card.dataset.youtube) {
-                var wrap   = card.querySelector('.work-card-img-wrap');
-                var iframe = document.createElement('iframe');
-                iframe.className = 'work-card-iframe';
-                iframe.src = 'https://www.youtube-nocookie.com/embed/' + card.dataset.youtube +
-                             '?autoplay=1&mute=1&rel=0&modestbranding=1';
-                iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
-                iframe.allowFullscreen = true;
-                iframe.title = card.querySelector('.work-card-title').textContent;
-                wrap.appendChild(iframe);
-            }
-
-            // Centre the card: once mid-transition for responsiveness, then a
-            // final correction after the width (and scrollWidth) fully settle
-            function centre() {
-                easeTo(card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2);
-            }
-            setTimeout(centre, 340);
-            setTimeout(function () { centre(); syncThumb(); syncArrows(); }, 720);
-        });
-
-        /* ── Arrow hover: continuous scroll ── */
-        document.addEventListener('mouseenter', function (e) {
-            if (!e.target.closest) return;
-            var btn = e.target.closest('.work-arrow');
-            if (!btn) return;
-            hoverDir = btn.classList.contains('work-arrow--left') ? -1 : 1;
-            wake();
-        }, true);
-        document.addEventListener('mouseleave', function (e) {
-            if (!e.target.closest) return;
-            if (e.target.closest('.work-arrow')) hoverDir = 0;
-        }, true);
-
-        /* ── Mouse-proximity auto-scroll ── */
-        if (area) {
-            area.addEventListener('mouseenter', function () { inArea = true;  wake(); });
-            area.addEventListener('mouseleave', function () { inArea = false; });
-            area.addEventListener('mousemove',  function (e) { mouseX = e.clientX; });
-        }
-
-        function wake() {
-            if (!rafId) rafId = requestAnimationFrame(frame);
-        }
-
-        function frame() {
-            var speed = 0;
-            if (wheelRaf) { rafId = null; return; }
-
-            if (hoverDir !== 0) {
-                speed = hoverDir * HOVER_SPEED;
-            } else if (inArea && mouseX >= 0 && area) {
-                var rect = area.getBoundingClientRect();
-                var rel  = (mouseX - rect.left) / rect.width;
-                if (rel < DEAD_ZONE) {
-                    speed = -MOUSE_SPEED * Math.pow((DEAD_ZONE - rel) / DEAD_ZONE, 1.8);
-                } else if (rel > 1 - DEAD_ZONE) {
-                    speed =  MOUSE_SPEED * Math.pow((rel - (1 - DEAD_ZONE)) / DEAD_ZONE, 1.8);
-                }
-            }
-
-            if (speed !== 0) {
-                track.scrollLeft += speed;
-                syncThumb();
-                syncArrows();
-            }
-
-            if (hoverDir !== 0 || (inArea && speed !== 0)) {
-                rafId = requestAnimationFrame(frame);
-            } else {
-                rafId = null;
-            }
-        }
-
-        /* ── Thumb sync (all bars) ── */
-        function syncThumb() {
-            var ratio  = track.clientWidth / track.scrollWidth;
-            var offset = track.scrollLeft  / track.scrollWidth;
-            for (var i = 0; i < bars.length; i++) {
-                bars[i].thumb.style.width     = (ratio * 100) + '%';
-                bars[i].thumb.style.transform = 'translateX(' + (offset / ratio * 100) + '%)';
-            }
-        }
-        track.addEventListener('scroll', function () { syncThumb(); syncArrows(); area.classList.toggle('is-scrolled', track.scrollLeft > 10); }, { passive: true });
-        window.addEventListener('resize', syncThumb);
-        syncThumb();
-
-        /* ── Arrow show/hide ── */
-        function syncArrows() {
-            var btnL = document.querySelector('.work-arrow--left');
-            var btnR = document.querySelector('.work-arrow--right');
-            if (btnL) btnL.classList.toggle('is-hidden', track.scrollLeft <= 2);
-            if (btnR) btnR.classList.toggle('is-hidden',
-                track.scrollLeft >= track.scrollWidth - track.clientWidth - 2);
-        }
-        syncArrows();
-
-        /* ── Scrollbar click-to-seek + thumb drag (both bars) ── */
-        var dragging = false, dragStartX = 0, dragStartScroll = 0, dragBarWidth = 0;
-
-        bars.forEach(function (b) {
-            b.bar.addEventListener('mousedown', function (e) {
-                if (e.target === b.thumb) return;
-                var rect = b.bar.getBoundingClientRect();
-                var rel  = (e.clientX - rect.left) / rect.width;
-                easeTo(rel * (track.scrollWidth - track.clientWidth));
-                e.preventDefault();
             });
-
-            b.thumb.addEventListener('mousedown', function (e) {
-                dragging = true;
-                dragStartX = e.clientX;
-                dragStartScroll = track.scrollLeft;
-                dragBarWidth = b.bar.clientWidth;
-                if (easingRaf) { cancelAnimationFrame(easingRaf); easingRaf = null; }
-                stopWheelGlide();
-                document.body.style.userSelect = 'none';
-                b.thumb.style.cursor = 'grabbing';
-                e.preventDefault();
-            });
-
-            b.bar.style.cursor   = 'pointer';
-            b.thumb.style.cursor = 'grab';
-        });
-
-        document.addEventListener('mousemove', function (e) {
-            if (!dragging) return;
-            var scrollable = track.scrollWidth - track.clientWidth;
-            var ratio      = track.clientWidth / track.scrollWidth;
-            track.scrollLeft = dragStartScroll + (e.clientX - dragStartX) / (dragBarWidth * ratio) * scrollable;
-        });
-        document.addEventListener('mouseup', function () {
-            if (dragging) { dragging = false; document.body.style.userSelect = ''; }
-            for (var i = 0; i < bars.length; i++) bars[i].thumb.style.cursor = 'grab';
-        });
-    })();
-    </script>
-
-    <!-- Spotlight glow on work cards -->
-    <script>
-    (function () {
-        // One write per frame, and only for cards actually on screen — keeps
-        // pointer tracking cheap however many cards the gallery holds
-        var section = document.getElementById('work');
-        var cards   = [].slice.call(document.querySelectorAll('.work-card'));
-        var px = 0, py = 0, queued = false;
-
-        function paint() {
-            queued = false;
-            if (!section.classList.contains('is-visible')) return;
-            var vw = window.innerWidth, rects = [], i;
-            for (i = 0; i < cards.length; i++) rects.push(cards[i].getBoundingClientRect()); // read
-            for (i = 0; i < cards.length; i++) {                                              // write
-                var rect = rects[i];
-                if (rect.right < 0 || rect.left > vw) continue;
-                cards[i].style.setProperty('--x',  (px - rect.left).toFixed(1));
-                cards[i].style.setProperty('--y',  (py - rect.top).toFixed(1));
-                cards[i].style.setProperty('--xp', ((px - rect.left) / rect.width).toFixed(3));
-                cards[i].style.setProperty('--yp', ((py - rect.top)  / rect.height).toFixed(3));
+            hubs.forEach(function (hb) { proj(hb.v, Q); if (Q[2] > .02) { dot(Q[0], Q[1], 11, Math.min(1, Q[2] * 4) * .8); } });
+            ctx.globalCompositeOperation = 'source-over';
+            // the currency each payment carries
+            ctx.font = "600 13px Jost, 'Helvetica Neue', Arial, sans-serif"; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+            for (var i = 0; i < heads.length; i += 3) {
+                var hx = heads[i], hy = heads[i + 1] - 19;
+                ctx.beginPath(); ctx.arc(hx, hy, 12.5, 0, 6.2832);
+                ctx.fillStyle = 'rgba(8,28,36,.82)'; ctx.fill();
+                ctx.strokeStyle = 'rgba(190,236,242,.75)'; ctx.lineWidth = 1; ctx.stroke();
+                ctx.fillStyle = '#fff'; ctx.fillText(heads[i + 2], hx, hy + 1);
             }
         }
-
-        document.addEventListener('pointermove', function (e) {
-            px = e.clientX; py = e.clientY;
-            if (!queued) { queued = true; requestAnimationFrame(paint); }
-        }, { passive: true });
+        size(); window.addEventListener('resize', size);
+        new IntersectionObserver(function (en) {
+            var on = en[0].isIntersecting;
+            if (on && !live) { live = true; t0 = performance.now(); size(); requestAnimationFrame(draw); } else if (!on) live = false;
+        }, { rootMargin: '20% 0px' }).observe(section);
     })();
-    </script>
+
+    /* ── Reveal on enter ── */
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: .18, rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+
+    /* ── Engagement previews: floating on desktop, inline on touch ── */
+    var peek = document.getElementById('peek'), pImg = peek.querySelector('img'), pVid = peek.querySelector('video');
+    var rows = [].slice.call(document.querySelectorAll('.row'));
+    var hover = window.matchMedia('(hover: hover) and (min-width: 901px)');
+    rows.forEach(function (row) {
+        var thumb = document.createElement('div'); thumb.className = 'row-thumb';
+        if (hover.matches) { /* desktop uses the floating preview */ }
+        else if (row.dataset.video) thumb.innerHTML = '<video muted loop playsinline autoplay preload="metadata" src="' + row.dataset.video + '"></video>';
+        else thumb.innerHTML = '<img loading="lazy" alt="" src="' + row.dataset.img + '">';
+        if (!hover.matches) row.insertBefore(thumb, row.querySelector('.row-links'));
+        row.addEventListener('pointerenter', function (e) {
+            if (!hover.matches || e.pointerType === 'touch') return;
+            if (row.dataset.video) {
+                pImg.hidden = true; pVid.hidden = false;
+                if (pVid.getAttribute('src') !== row.dataset.video) pVid.src = row.dataset.video;
+                pVid.play().catch(function () {});
+            } else { pVid.hidden = true; pVid.pause(); pImg.hidden = false; pImg.src = row.dataset.img; }
+            peek.classList.add('on');
+        });
+        row.addEventListener('pointerleave', function () { peek.classList.remove('on'); pVid.pause(); });
+    });
+    var px = 0, py = 0, pq = false;
+    document.getElementById('rows').addEventListener('pointermove', function (e) {
+        px = e.clientX; py = e.clientY;
+        if (!pq) { pq = true; requestAnimationFrame(function () {
+            pq = false;
+            var w = peek.offsetWidth, h = peek.offsetHeight;
+            var x = Math.min(window.innerWidth - w - 24, px + 28), y = Math.max(24, Math.min(window.innerHeight - h - 24, py - h / 2));
+            peek.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+        }); }
+    }, { passive: true });
+})();
+</script>
 </body>
 </html>
