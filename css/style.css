@@ -914,14 +914,14 @@ canvas#cloud-canvas {
     transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
-.work-card.is-expanded .work-card-info::before { opacity: 1; }
+.work-card.is-expanded .work-card-info:has(.work-card-desc)::before { opacity: 1; }
 .work-card.is-expanded .work-card-desc {
     opacity: 1;
     transform: none;
 }
 
 @media (hover: hover) {
-    .work-card:hover .work-card-info::before { opacity: 1; }
+    .work-card:hover .work-card-info:has(.work-card-desc)::before { opacity: 1; }
     .work-card:hover .work-card-desc {
         opacity: 1;
         transform: none;
