@@ -305,6 +305,9 @@ section { position: relative; padding: 0 var(--gutter); }
         linear-gradient(90deg, rgba(9, 30, 38, .6) 0%, rgba(9, 30, 38, .35) 40%, rgba(9, 30, 38, 0) 70%),
         rgba(20, 70, 84, .16);
 }
+.connect::before, .connect::after {   /* rise out of the mist: no hard top edge against the section above */
+    -webkit-mask-image: linear-gradient(180deg, transparent 6%, rgba(0, 0, 0, .5) 20%, #000 36%); mask-image: linear-gradient(180deg, transparent 6%, rgba(0, 0, 0, .5) 20%, #000 36%);
+}
 @keyframes swell { from { transform: scale(1.02); } to { transform: scale(1.1) translate3d(-1%, 1.2%, 0); } }
 .connect .display { font-size: clamp(40px, 7vw, 104px); font-weight: 300; letter-spacing: .2em; line-height: 1.05; }
 .connect-meta { display: flex; flex-wrap: wrap; gap: 14px 56px; font-size: 12px; letter-spacing: .08em; opacity: .8; }
@@ -320,7 +323,9 @@ footer a:hover { color: var(--white); }
 
 /* ── Globe ──────────────────────────────────────────────────── */
 .globe { height: 280vh; padding: 0; }
-.globe-stick { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.globe-stick { position: sticky; top: 0; height: 100vh; overflow: hidden; 
+    /* dissolve the lower edge into the sky so the globe melts into the next section instead of ending on a line */
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 62%, rgba(0, 0, 0, .55) 82%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 62%, rgba(0, 0, 0, .55) 82%, transparent 100%); }
 .globe-stick::before {   /* space backdrop generated with GoodTake */
     content: ''; position: absolute; inset: 0; background: url('img/space.jpg') center / cover no-repeat; opacity: .9;
     -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 100%); mask-image: linear-gradient(180deg, transparent 0, #000 22%, #000 100%);
